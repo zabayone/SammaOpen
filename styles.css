@@ -12,13 +12,9 @@ body {
   padding: 10px;
   color: #2e3d30;
   background: linear-gradient(to bottom, #ffffff, #fff9ee);
-  scroll
 }
 
-#logo {
-  text-align: center;
-  margin: 10px 0 20px;
-}
+
 #logo img {
   height: 60px;
   border-radius: 50%;
@@ -42,10 +38,14 @@ body {
   display: flex;
   justify-content: space-between;
   position: relative;
-  margin: 20px 0;
   border: 2px solid #2e3d30;
   border-radius: 25px;
   overflow: hidden;
+  width: 60%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  justify-content: center;
   background-color: #f3eee683;
 }
 
@@ -56,12 +56,12 @@ body {
 .tab-switch label {
   flex: 1;
   text-align: center;
-  padding: 12px 0;
+  padding: 4px 0;
   cursor: pointer;
   z-index: 2;
   position: relative;
   font-weight: bold;
-  color: #1a301d;
+  color: #0b2e0f;
   font-family: 'Playfair Display', serif;
 }
 
@@ -71,7 +71,7 @@ body {
   bottom: 0;
   left: 0;
   width: 50%;
-  background-color: #c95917;
+  background-color: #cb4d04ca;
   border-radius: 25px;
   z-index: 1;
   transition: left 0.3s ease;
@@ -139,6 +139,7 @@ button:hover {
   overflow: hidden;
   background-color: #2e3d30;
   margin-top: 20px;
+  margin-bottom: -10px;
 }
 
 #leaderboard table {
@@ -213,6 +214,7 @@ button:hover {
 
   button {
     font-size: 0.95em;
+    border-radius: 25px;;
   }
 
   .add-result {
