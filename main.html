@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Leaderboard Tennis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css" />
+  <script type="module" src="script.js"></script>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <div class="tab-switch">
+            <input type="radio" id="singles" name="tab" checked>
+            <label for="singles" id="tab-singles">Singolo</label>
+            <input type="radio" id="doubles" name="tab">
+            <label for="doubles" id="tab-doubles">Doppio</label>
+            <div class="slider"></div>
+        </div>
+
+        <div id="leaderboard"></div>
+
+        <h3>Aggiungi Risultato</h3>
+       <div class="match-form">
+            <div class="team" id="team1">
+                <select id="player1"></select>
+                <div class="vs">VS</div>
+                <select id="player2"></select>
+            </div>
+
+            <div class="team" id="team2" style="display: none;">
+                <select id="player3"></select>
+                <select id="player4"></select>
+            </div>
+
+            <input type="text" id="setResults" placeholder="Es. 6-4, 3-6, 10-8">
+            <button id="addResultButton">Conferma</button>
+        </div>
+
+    </div>
+
+    <div class="container player-page" id="playerPage" style="display:none;">
+        <button onclick="closePlayerPage()">Indietro</button>
+        <h2 id="playerName"></h2>
+        <p>ELO: <span id="playerElo"></span></p>
+        <h3>Ultime 5 Partite</h3>
+        <ul id="playerMatches"></ul>
+    </div>
+
+    <script>
+        // Funzione per chiudere la pagina giocatore
+        function closePlayerPage() {
+        document.getElementById('playerPage').style.display = 'none';
+        document.getElementById('mainContainer').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
