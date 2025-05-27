@@ -12,6 +12,7 @@ body {
   padding: 10px;
   color: #2e3d30;
   background: linear-gradient(to bottom, #ffffff, #fff9ee);
+  scroll
 }
 
 #logo {
@@ -137,7 +138,7 @@ button:hover {
   border-radius: 25px;
   overflow: hidden;
   background-color: #2e3d30;
-  margin-top: 35px;
+  margin-top: 20px;
 }
 
 #leaderboard table {
@@ -216,9 +217,15 @@ button:hover {
 
   .add-result {
     width: 90%;
+    margin-top: 0px;;
   }
+}
+
+#player1, #player2, #player3, #player4 {
+  text-align: center;
 }
 
 #setResults{
   width: auto;
+  text-align: center;
 }
