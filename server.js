@@ -1,6 +1,6 @@
 // server.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, getDoc, doc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCqINXR7uKQw5edv6lic-8Xcdlx9PyJAKU",
@@ -43,6 +43,20 @@ export async function loadLeaderboardData(players) {
   }
 
   return data;
+}
+
+
+export async function checkPasskey(userInput) {
+  const passkeyRef = doc(db, "Passkey", "Passkey");  // documento specifico
+  const passkeySnap = await getDoc(passkeyRef);       // getDoc, non getDocs
+
+  if (passkeySnap.exists()) {
+    const storedPasskey = passkeySnap.data().int;
+    return userInput === String(storedPasskey);
+  } else {
+    alert("Errore: passkey non trovata nel database.");
+    return false;
+  }
 }
 
 // Funzione che aggiorna elo e match in Firestore per singoli o doppi

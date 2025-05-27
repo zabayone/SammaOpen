@@ -1,4 +1,5 @@
 import { loadLeaderboardData, saveMatchResult } from './server.js';
+import { checkPasskey } from './server.js';
 
 const players = [
   "Nicola Nespoli", "Mattia Casulli", "Andrea Redaelli", "Giacomo Belli",
@@ -95,6 +96,40 @@ function parseResult(str) {
 
 async function addResult() {
   try {
+    // Mostra modale
+    document.getElementById("passkeyModal").style.display = "flex";
+
+    return new Promise((resolve, reject) => {
+      const confirmBtn = document.getElementById("confirmPasskey");
+      const cancelBtn = document.getElementById("cancelPasskey");
+
+      confirmBtn.onclick = async () => {
+        const input = document.getElementById("passkeyInput").value.trim();
+        const isValid = await checkPasskey(input);
+        if (!isValid) {
+          alert("Passkey errata.");
+          return;
+        }
+
+        document.getElementById("passkeyModal").style.display = "none";
+        document.getElementById("passkeyInput").value = "";
+        resolve(realAddResult()); // Chiama la vera funzione
+      };
+
+      cancelBtn.onclick = () => {
+        document.getElementById("passkeyModal").style.display = "none";
+        document.getElementById("passkeyInput").value = "";
+        reject("Annullato");
+      };
+    });
+
+  } catch (e) {
+    console.error("Errore in addResult:", e);
+    alert("Errore salvando il risultato. Controlla console.");
+  }
+}
+
+async function realAddResult() {
     if (currentTab === 'singles') {
       const p1 = document.getElementById('player1').value;
       const p2 = document.getElementById('player2').value;
@@ -156,7 +191,7 @@ async function addResult() {
       if (
         team1.some(p => !data.doubles[p]) ||
         team2.some(p => !data.doubles[p]) ||
-        new Set([...team1, ...team2]).size < 4 ||  // giocatori duplicati
+        new Set([...team1, ...team2]).size < 4 ||
         resultStr === ''
       ) {
         alert("Input non valido.");
@@ -204,7 +239,6 @@ async function addResult() {
       winnerTeam.forEach(p => data.doubles[p].wins++);
       loserTeam.forEach(p => data.doubles[p].losses++);
 
-      // Salva dati aggiornati in Firestore con unica chiamata
       await saveMatchResult('doubles', {
         [winnerTeam[0]]: data.doubles[winnerTeam[0]],
         [winnerTeam[1]]: data.doubles[winnerTeam[1]],
@@ -215,11 +249,8 @@ async function addResult() {
 
     renderLeaderboard();
 
-  } catch (e) {
-    console.error("Errore in addResult:", e);
-    alert("Errore salvando il risultato. Controlla console.");
   }
-}
+
 
 function showPlayer(name) {
   const player = data[currentTab][name];
