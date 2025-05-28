@@ -40,6 +40,7 @@ function setupEventListeners() {
   document.getElementById('addResultButton').addEventListener('click', addResult);
   document.getElementById('singles').addEventListener('change', updateVsPosition);
   document.getElementById('doubles').addEventListener('change', updateVsPosition);
+  document.getElementById
 
 }
 
@@ -70,7 +71,7 @@ function renderLeaderboard() {
         const wins = player.wins || 0;
         const losses = player.losses || 0;
         return `
-          <tr onclick="showPlayer('${name}')">
+          <tr onclick="window.location='stats.html?name=${encodeURIComponent(name)}'">
             <td><span class="rank-number">${i + 1}</span></td>
             <td>${name}</td>
             <td>${player.elo}</td>

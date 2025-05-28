@@ -1,0 +1,145 @@
+body {
+  font-family: "Georgia", serif;
+  background-color: #fff8f0;
+  color: #2d2d2d;
+  padding: 2rem;
+  max-width: 800px;
+  margin: auto;
+}
+
+h1, h2 {
+  color: #d35400;
+}
+
+.stats-section {
+  margin-bottom: 3rem;
+}
+
+.carousel-container {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.carousel {
+  display: flex;
+  transition: transform 0.3s ease;
+  width: 100%;
+  overflow: hidden;
+}
+
+.carousel-item {
+  flex: 0 0 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+  background: #fff3e0;
+  margin: 0 0.5rem;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+button {
+  background-color: #e67e22;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  font-size: 1.2rem;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #d35400;
+}
+
+.match {
+  border-bottom: 1px solid #ccc;
+  padding: 8px 0;
+}
+.teams {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+.winner {
+  font-style: italic;
+  color: #555;
+}
+.winner strong {
+  color: #1b5e20; /* verde vincitore */
+}
+.team1.winner, .team2.winner {
+  color: #1b5e20;
+}
+.vs {
+  margin: 0 6px;
+  font-weight: normal;
+  color: #999;
+}
+.carousel-item {
+  transition: transform 0.3s ease-in-out;
+  white-space: normal;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.match-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  max-width: 600px;
+}
+
+.teams {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.team {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.scores {
+  display: flex;
+  gap: 6px;
+}
+
+.set-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.score {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  margin: 1px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  background-color: #fffbfb;
+}
+
+.score1 {
+  border-color: #c95917; /* arancione per team1 */
+  color: #c95917;
+}
+
+.score2 {
+  border-color: #2e3d30; /* blu per team2 */
+  color: #2e3d30;
+}

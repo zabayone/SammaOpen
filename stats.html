@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Statistiche Giocatore</title>
+  <link rel="stylesheet" href="stats.css">
+</head>
+<body>
+  <h1 id="player-name">Statistiche:</h1>
+
+  <div id="singles-section" class="stats-section">
+    <h2>Singolare</h2>
+    <p id="singles-elo"></p>
+    <p id="singles-record"></p>
+    <div class="carousel-container">
+      <button id="prev-singles">←</button>
+      <div id="carousel-singles" class="carousel"></div>
+      <button id="next-singles">→</button>
+    </div>
+  </div>
+
+  <div id="doubles-section" class="stats-section">
+    <h2>Doppio</h2>
+    <p id="doubles-elo"></p>
+    <p id="doubles-record"></p>
+    <div class="carousel-container">
+      <button id="prev-doubles">←</button>
+      <div id="carousel-doubles" class="carousel"></div>
+      <button id="next-doubles">→</button>
+    </div>
+  </div>
+
+  <script type="module" src="stats.js"></script>
+</body>
+</html>

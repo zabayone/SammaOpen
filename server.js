@@ -6,11 +6,10 @@ const firebaseConfig = {
   apiKey: "AIzaSyCqINXR7uKQw5edv6lic-8Xcdlx9PyJAKU",
   authDomain: "samma-open.firebaseapp.com",
   projectId: "samma-open",
-  storageBucket: "samma-open.firebasestorage.app",
+  storageBucket: "samma-open.appspot.com",
   messagingSenderId: "203807765703",
   appId: "1:203807765703:web:9923f6766f510de4993ae2"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
