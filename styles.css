@@ -5,7 +5,7 @@ html {
   font-size: 16px;
   background: linear-gradient(to bottom, #ffffff, #fff9ee);
   overflow-x: hidden;
-  scroll-behavior: smooth;s
+  scroll-behavior: smooth;
 }
 
 body {
@@ -103,7 +103,7 @@ body {
   gap: 10px;
   justify-content: center;
   align-items: center;
-  width: 100%;
+  width: 95%;
 }
 
 .vs {
@@ -213,93 +213,88 @@ button:hover {
 #leaderboard tr:nth-child(3) td:first-child::before { background: silver; }
 #leaderboard tr:nth-child(4) td:first-child::before { background: #cd7f32; }
 
-.carousel-container {
+#setResults{
   width: 95%;
-  margin: 15px auto;
-  position: relative;
 }
 
-.carousel {
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  border-radius: 15px;
-  background: #fff9ee;
-  border: 2px solid #2e3d30;
-  min-height: 100px;
-}
-
-.carousel-item {
-  position: absolute;
-  width: 100%;
-  transition: transform 0.3s ease-in-out;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-.carousel-nav {
-  width: 100%;
+/* Overlay sfondo */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 95%;
+  height: 100%;
+  background: rgba(230, 200, 170, 0.6); /* trasparenza calda */
   display: flex;
-  justify-content: space-between;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  pointer-events: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }
 
-.carousel-nav button {
-  pointer-events: auto;
-  background-color: #2e3d30;
+/* Contenitore modale */
+.modal {
+  margin-top: 40px;
+  background-color: #fff9ee;
+  border: 2px solid #c95917; /* colore arancio Roland Garros */
+  border-radius: 25px;
+  padding: 25px 30px;
+  max-width: 400px;
+  width: 305px;
+  box-shadow: 0 8px 20px rgba(201, 89, 23, 0.3);
+  font-family: 'Merriweather', serif;
+  color: #2e3d30;
+  text-align: center;
+  justify-content: center;
+}
+
+/* Titolo modale */
+.modal h2 {
+  margin-top: 0;
+  font-weight: 700;
+  font-size: 1.8em;
+  margin-bottom: 15px;
+  color: #c95917;
+}
+
+/* Input passkey */
+.modal input[type="password"] {
+  width: 100%;
+  padding: 12px 15px;
+  font-size: 1em;
+  border: 1.5px solid #c95917;
+  border-radius: 25px;
+  background-color: #ede7e2;
+  color: #2e3d30;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+/* Pulsanti */
+.modal button {
+  background-color: #c95917;
   color: white;
   border: none;
-  padding: 8px 12px;
-  border-radius: 20px;
+  padding: 12px 25px;
+  font-size: 1em;
+  border-radius: 25px;
   cursor: pointer;
-  transition: background-color 0.3s;
-  margin: 0 10px;
-  font-size: 0.9em;
-}
-
-.match-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.teams {
-  flex: 1;
-  margin-right: 0;
-  margin-bottom: 10px;
-}
-
-.team {
-  display: flex;
-  align-items: center;
-  padding: 8px;
-  margin: 5px 0;
-  background: #f3eee6;
-  border-radius: 8px;
-}
-
-.team.winner {
-  background: #c95917;
-  color: white;
   font-weight: bold;
+  transition: background-color 0.3s ease;
+  margin: 0 10px;
+  width: 42%;
 }
 
-.sets {
-  flex: 0 0 auto;
-  font-family: 'Merriweather', serif;
-  font-size: 1.1em;
-  color: #2e3d30;
-  padding: 10px;
-  background: #f3eee6;
-  border-radius: 8px;
-  border: 1px solid #2e3d30;
-  text-align: center;
-  margin-top: 5px;
+.modal button:hover {
+  background-color: #a74a15;
 }
+
+/* Pulsante annulla */
+.modal .cancel-btn {
+  background-color: #2e3d30;
+}
+
+.modal .cancel-btn:hover {
+  background-color: #1a2618;
+}
+
