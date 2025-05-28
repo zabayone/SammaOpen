@@ -68,12 +68,13 @@ function renderLeaderboard() {
     <table>
       <tr><th>#</th><th>Nome</th><th>ELO</th><th>W</th><th>L</th></tr>
       ${sorted.map(([name, player], i) => {
+        const abbreviatedName = abbreviaNome(name);
         const wins = player.wins || 0;
         const losses = player.losses || 0;
         return `
           <tr onclick="window.location='stats.html?name=${encodeURIComponent(name)}'">
             <td><span class="rank-number">${i + 1}</span></td>
-            <td>${name}</td>
+            <td>${abbreviatedName}</td>
             <td>${player.elo}</td>
             <td>${wins}</td>
             <td>${losses}</td>
@@ -81,6 +82,12 @@ function renderLeaderboard() {
       }).join('')}
     </table>
   `;
+}
+
+export function abbreviaNome(nomeCompleto) {
+  const parts = nomeCompleto.trim().split(" ");
+  if (parts.length === 1) return parts[0]; // solo un nome
+  return `${parts[0][0]}. ${parts.slice(1).join(" ")}`;
 }
 
 function parseResult(str) {
@@ -260,12 +267,15 @@ function showPlayer(name) {
 }
 
 function updateVsPosition() {
-  const isSingles = document.getElementById('singles').checked;
+  // Check if we're on index.html by looking for key elements
   const team1 = document.getElementById('team1');
   const team2 = document.getElementById('team2');
   const vsElement = document.querySelector('.vs');
 
+  // Exit if we're not on index.html (elements not found)
   if (!team1 || !team2 || !vsElement) return;
+
+  const isSingles = document.getElementById('singles').checked;
 
   if (isSingles) {
     team1.style.display = 'flex';

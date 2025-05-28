@@ -4,6 +4,8 @@ html {
   height: 100%;
   font-size: 16px;
   background: linear-gradient(to bottom, #ffffff, #fff9ee);
+  overflow-x: hidden;
+  scroll-behavior: smooth;s
 }
 
 body {
@@ -12,6 +14,8 @@ body {
   padding: 10px;
   color: #2e3d30;
   background: linear-gradient(to bottom, #ffffff, #fff9ee);
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 
@@ -23,29 +27,27 @@ body {
 }
 
 .add-result {
+  width: 90%;
+  margin-top: 10px;
   text-align: center;
   border-radius: 25px;
-  width: 38%;
   position: relative;
   transform: translateX(-50%);
   left: 50%;
   color: #c95917;
   font-family: 'Playfair Display', serif;
-  font-size: 1.4em;
+  font-size: 1.2em;
 }
 
 .tab-switch {
   display: flex;
   justify-content: space-between;
   position: relative;
+  margin: 15px auto;
   border: 2px solid #2e3d30;
   border-radius: 25px;
   overflow: hidden;
-  width: 60%;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  justify-content: center;
+  width: 90%;
   background-color: #f3eee683;
 }
 
@@ -56,13 +58,14 @@ body {
 .tab-switch label {
   flex: 1;
   text-align: center;
-  padding: 4px 0;
+  padding: 10px 0;
   cursor: pointer;
   z-index: 2;
   position: relative;
   font-weight: bold;
   color: #0b2e0f;
   font-family: 'Playfair Display', serif;
+  font-size: 0.9em;
 }
 
 .tab-switch .slider {
@@ -90,13 +93,17 @@ body {
   border-radius: 20px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   padding: 15px;
+  width: 90%;
+  margin: 0 auto;
 }
 
 .team {
   display: flex;
+  flex-direction: column;
   gap: 10px;
   justify-content: center;
   align-items: center;
+  width: 100%;
 }
 
 .vs {
@@ -109,8 +116,8 @@ body {
 
 select, input[type="text"] {
   width: 100%;
-  padding: 10px;
-  font-size: 1em;
+  padding: 12px;
+  font-size: 16px; /* Previene lo zoom su iOS */
   border: 1px solid #aaa;
   border-radius: 25px;
   background-color: #ede7e2;
@@ -120,17 +127,19 @@ select, input[type="text"] {
 button {
   background-color: #2e3d30;
   color: white;
-  padding: 12px;
+  padding: 12px 20px;
   border: none;
-  border-radius: 8px;
-  font-size: 1em;
+  border-radius: 25px;
+  font-size: 0.95em;
   cursor: pointer;
   font-weight: bold;
   font-family: 'Playfair Display', serif;
+  width: 100%;
+  margin: 5px 0;
 }
 
 button:hover {
-  background-color: #c1440e;
+  background-color: #2e3d30;
 }
 
 #tableWrapper {
@@ -138,8 +147,8 @@ button:hover {
   border-radius: 25px;
   overflow: hidden;
   background-color: #2e3d30;
-  margin-top: 20px;
-  margin-bottom: -10px;
+  margin: 15px auto;
+  width: 95%;
 }
 
 #leaderboard table {
@@ -148,10 +157,11 @@ button:hover {
   border-collapse: collapse;
   background-color: #fff9ee;
   margin-top: 5px;
+  font-size: 0.9em;
 }
 
 #leaderboard th, #leaderboard td {
-  padding: 8px;
+  padding: 8px 4px;
   text-align: center;
   font-size: 0.95em;
   font-family: 'Merriweather', serif;
@@ -171,7 +181,7 @@ button:hover {
 }
 
 #leaderboard tr:hover {
-  background-color: #e2d8cc;
+  background-color: inherit;
 }
 
 #leaderboard td:first-child {
@@ -203,111 +213,93 @@ button:hover {
 #leaderboard tr:nth-child(3) td:first-child::before { background: silver; }
 #leaderboard tr:nth-child(4) td:first-child::before { background: #cd7f32; }
 
-@media (max-width: 600px) {
-  .team {
-    flex-direction: column;
-  }
-
-  .tab-switch label {
-    font-size: 0.9em;
-  }
-
-  button {
-    font-size: 0.95em;
-    border-radius: 25px;;
-  }
-
-  .add-result {
-    width: 90%;
-    margin-top: 0px;;
-  }
-}
-
-#player1, #player2, #player3, #player4 {
-  text-align: center;
-}
-
-#setResults{
-  width: auto;
-  text-align: center;
-}
-
-/* Overlay sfondo */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(230, 200, 170, 0.6); /* trasparenza calda */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-/* Contenitore modale */
-.modal {
-  background-color: #fff9ee;
-  border: 2px solid #c95917; /* colore arancio Roland Garros */
-  border-radius: 25px;
-  width: 300px;
-  box-shadow: 0 8px 20px rgba(201, 89, 23, 0.3);
-  font-family: 'Merriweather', serif;
-  color: #2e3d30;
-  text-align: center;
-  display: none;
-  left: 50%;
-  transform: translateX(-50%);
-  position: absolute;
-  margin-top: 20px;
-  padding: 10px;
-}
-
-
-/* Input passkey */
-.modal input[type="password"] {
-  width: 255px;
-  padding: 12px 15px;
-  font-size: 1em;
-  border: 1.5px solid #c95917;
-  border-radius: 25px;
-  text-align: center;
-  background-color: #ede7e2;
-  color: #2e3d30;
-  margin-bottom: 20px;
-  box-sizing: border-box;
-  left: 50%;
-  transform: translateX(-50%);
+.carousel-container {
+  width: 95%;
+  margin: 15px auto;
   position: relative;
 }
 
-/* Pulsanti */
-.modal button {
-  background-color: #c95917;
+.carousel {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+  background: #fff9ee;
+  border: 2px solid #2e3d30;
+  min-height: 100px;
+}
+
+.carousel-item {
+  position: absolute;
+  width: 100%;
+  transition: transform 0.3s ease-in-out;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.carousel-nav {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.carousel-nav button {
+  pointer-events: auto;
+  background-color: #2e3d30;
   color: white;
   border: none;
-  position: relative;
-  padding: 12px 25px;
-  font-size: 1em;
-  border-radius: 25px;
+  padding: 8px 12px;
+  border-radius: 20px;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
   margin: 0 10px;
-  left: 10px;
-
+  font-size: 0.9em;
 }
 
-.modal button:hover {
-  background-color: #a74a15;
+.match-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  flex-direction: column;
+  align-items: stretch;
 }
 
-/* Pulsante annulla */
-.modal .cancel-btn {
-  background-color: #2e3d30;
+.teams {
+  flex: 1;
+  margin-right: 0;
+  margin-bottom: 10px;
 }
 
-.modal .cancel-btn:hover {
-  background-color: #1a2618;
+.team {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  margin: 5px 0;
+  background: #f3eee6;
+  border-radius: 8px;
+}
+
+.team.winner {
+  background: #c95917;
+  color: white;
+  font-weight: bold;
+}
+
+.sets {
+  flex: 0 0 auto;
+  font-family: 'Merriweather', serif;
+  font-size: 1.1em;
+  color: #2e3d30;
+  padding: 10px;
+  background: #f3eee6;
+  border-radius: 8px;
+  border: 1px solid #2e3d30;
+  text-align: center;
+  margin-top: 5px;
 }

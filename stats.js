@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+import {abbreviaNome} from "./script.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCqINXR7uKQw5edv6lic-8Xcdlx9PyJAKU",
@@ -16,7 +17,9 @@ const db = getFirestore(app);
 // Ottieni il nome del giocatore dall'URL
 const urlParams = new URLSearchParams(window.location.search);
 const playerName = decodeURIComponent(urlParams.get("name"));
-document.getElementById("player-name").textContent = `Statistiche: ${playerName}`;
+document.getElementById("player-name").textContent = `Statistiche: ${abbreviaNome(playerName)}`;
+// Or if you really need the line break:
+document.getElementById("player-name").innerHTML = `Statistiche:<br>${abbreviaNome(playerName)}`;
 
 // Variabili caroselli e indici
 let currentIndexSingles = 0;
@@ -114,61 +117,43 @@ async function loadPlayerData() {
 }
 
 function createMatchElement(matchString) {
-  // Esempio input:
-  // "Mattia Casulli & Andrea Redaelli vs Nicola Nespoli & Davide Saccani: 6-4, 6-5 → Squadra vincente: Mattia Casulli & Andrea Redaelli"
-  
   const [teamsPart, rest] = matchString.split(" vs ");
-  if (!rest) return document.createTextNode(matchString); // fallback testo semplice
+  if (!rest) return document.createTextNode(matchString);
 
   const [team2Part, scoreAndWin] = rest.split(": ");
   if (!scoreAndWin) return document.createTextNode(matchString);
 
-  const team1 = teamsPart.trim();
-  const team2 = team2Part.trim();
+  const team1Names = teamsPart.split(" & ").map(name => abbreviaNome(name.trim()));
+  const team2Names = team2Part.split(" & ").map(name => abbreviaNome(name.trim()));
+  
+  const team1 = team1Names.join(" & ");
+  const team2 = team2Names.join(" & ");
 
   const [setsStr, winStr] = scoreAndWin.split(" → ");
-  const sets = setsStr.split(",").map(s => s.trim());
+  const winner = winStr?.trim();
 
   const container = document.createElement("div");
   container.className = "match-container";
 
-  // Squadre (a sinistra)
   const teamsDiv = document.createElement("div");
   teamsDiv.className = "teams";
+
   const team1Div = document.createElement("div");
-  team1Div.className = "team team1";
+  team1Div.className = `team ${winner === team1 ? 'winner' : ''}`;
   team1Div.textContent = team1;
+
   const team2Div = document.createElement("div");
-  team2Div.className = "team team2";
+  team2Div.className = `team ${winner === team2 ? 'winner' : ''}`;
   team2Div.textContent = team2;
+
+  const setsDiv = document.createElement("div");
+  setsDiv.className = "sets";
+  setsDiv.textContent = setsStr;
+
   teamsDiv.appendChild(team1Div);
   teamsDiv.appendChild(team2Div);
-
-  // Punteggi set (a destra)
-  const scoresDiv = document.createElement("div");
-  scoresDiv.className = "scores";
-
-  sets.forEach(setScore => {
-    const [score1, score2] = setScore.split("-").map(x => x.trim());
-
-    const setDiv = document.createElement("div");
-    setDiv.className = "set-score";
-
-    const scoreTeam1 = document.createElement("div");
-    scoreTeam1.className = "score score1";
-    scoreTeam1.textContent = score1;
-
-    const scoreTeam2 = document.createElement("div");
-    scoreTeam2.className = "score score2";
-    scoreTeam2.textContent = score2;
-
-    setDiv.appendChild(scoreTeam1);
-    setDiv.appendChild(scoreTeam2);
-    scoresDiv.appendChild(setDiv);
-  });
-
   container.appendChild(teamsDiv);
-  container.appendChild(scoresDiv);
+  container.appendChild(setsDiv);
 
   return container;
 }

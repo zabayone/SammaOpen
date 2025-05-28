@@ -1,18 +1,40 @@
 body {
   font-family: "Georgia", serif;
-  background-color: #fff8f0;
+  background-color: #fffbfb;
   color: #2d2d2d;
   padding: 2rem;
   max-width: 800px;
   margin: auto;
+  overflow: hidden; /* Hide scrollbars */
 }
 
 h1, h2 {
-  color: #d35400;
+  color: #c95917;
+  text-align: center;
+
+}
+
+#player-name {
+  font-weight: bold;
+  color: #1b5e20;
+  text-align: center;
+  background-color: #ffffff;
+  border-radius: 25px;
+  border-color: #c95917;
+  border-width: 3px;
+  border-style: solid;
+  padding: 1px;
+  padding-top: 10px;;
+  width: 500px;
+  position: relative;
+  height: 90px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .stats-section {
   margin-bottom: 3rem;
+  text-align: center;
 }
 
 .carousel-container {
@@ -20,6 +42,7 @@ h1, h2 {
   align-items: center;
   overflow: hidden;
   position: relative;
+  text-align: center;
 }
 
 .carousel {
@@ -27,27 +50,34 @@ h1, h2 {
   transition: transform 0.3s ease;
   width: 100%;
   overflow: hidden;
+  justify-content: center;
+  
 }
 
 .carousel-item {
-  flex: 0 0 100%;
   padding: 1rem;
+  flex: 0 0 95%; /* Occupano solo il 90% dello spazio visibile */
+  max-width: 360px; /* Più stretto di prima */
   box-sizing: border-box;
-  background: #fff3e0;
+  background: #fffbf4;
   margin: 0 0.5rem;
-  border-radius: 10px;
+  border-radius: 15px;
   text-align: center;
   font-weight: bold;
+  border: 1.5px solid #e67e22;
 }
 
 button {
   background-color: #e67e22;
   color: white;
   border: none;
-  padding: 0.5rem;
   cursor: pointer;
   font-size: 1.2rem;
-  border-radius: 5px;
+  border-radius: 0px;
+  height: 25px;
+  width: 30px;
+  border-radius: 25px;;
+
 }
 
 button:hover {
@@ -59,8 +89,8 @@ button:hover {
   padding: 8px 0;
 }
 .teams {
-  font-weight: bold;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
+  margin-left: -20px;;
 }
 .winner {
   font-style: italic;
@@ -90,10 +120,11 @@ button:hover {
   align-items: center;
   margin: 8px 0;
   padding: 8px;
-  border-bottom: 1px solid #ddd;
+  border-bottom: px solid #ddd;
   font-family: Arial, sans-serif;
   font-size: 14px;
   max-width: 600px;
+  border-radius: 20px;;
 }
 
 .teams {
@@ -108,6 +139,7 @@ button:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 12px;
 }
 
 .scores {
@@ -124,8 +156,8 @@ button:hover {
 .score {
   width: 28px;
   height: 28px;
-  border: 1px solid #333;
-  border-radius: 4px;
+  border: 1.5px solid #333;
+  border-radius: 13px;
   margin: 1px 0;
   display: flex;
   justify-content: center;
