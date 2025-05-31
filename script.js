@@ -25,6 +25,8 @@ function populateSelects() {
   const p3 = document.getElementById('player3');
   const p4 = document.getElementById('player4');
 
+  if (!p1 || !p2 ) return;
+
   players.forEach(name => {
     [p1, p2, p3, p4].forEach(select => {
       const opt = document.createElement('option');
@@ -35,6 +37,7 @@ function populateSelects() {
 }
 
 function setupEventListeners() {
+  if (!document.getElementById('singles') || !document.getElementById('doubles')) return;
   document.getElementById('singles').addEventListener('change', () => switchTab('singles'));
   document.getElementById('doubles').addEventListener('change', () => switchTab('doubles'));
   document.getElementById('addResultButton').addEventListener('click', addResult);
@@ -63,7 +66,7 @@ function renderLeaderboard() {
   const leaderboard = document.getElementById('leaderboard');
   const sorted = Object.entries(data[currentTab])
     .sort((a, b) => b[1].elo - a[1].elo);
-
+  if (!leaderboard) return;
   leaderboard.innerHTML = `
     <table>
       <tr><th>#</th><th>Nome</th><th>ELO</th><th>W</th><th>L</th></tr>

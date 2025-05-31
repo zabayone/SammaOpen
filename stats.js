@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
-import {abbreviaNome} from "./script.js";
+import { abbreviaNome } from "./script.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCqINXR7uKQw5edv6lic-8Xcdlx9PyJAKU",
@@ -14,109 +14,126 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Ottieni il nome del giocatore dall'URL
 const urlParams = new URLSearchParams(window.location.search);
 const playerName = decodeURIComponent(urlParams.get("name"));
-document.getElementById("player-name").textContent = `Statistiche: ${abbreviaNome(playerName)}`;
-// Or if you really need the line break:
 document.getElementById("player-name").innerHTML = `Statistiche:<br>${abbreviaNome(playerName)}`;
 
-// Variabili caroselli e indici
-let currentIndexSingles = 0;
-let currentIndexDoubles = 0;
+const containerSingles = document.getElementById("matchlist-singles");
+const containerDoubles = document.getElementById("matchlist-doubles");
 
-const carouselSingles = document.getElementById("carousel-singles");
-const carouselDoubles = document.getElementById("carousel-doubles");
-
-const prevSingles = document.getElementById("prev-singles");
-const nextSingles = document.getElementById("next-singles");
-const prevDoubles = document.getElementById("prev-doubles");
-const nextDoubles = document.getElementById("next-doubles");
-
-function updateCarousel(carousel, currentIndex) {
-  const items = carousel.querySelectorAll(".carousel-item");
-  items.forEach((item, index) => {
-    item.style.transform = `translateX(${(index - currentIndex) * 100}%)`;
-  });
+// Generate colors based on player name for consistency
+function getPlayerColor(name) {
+  const colors = [
+    '#ff6b35', '#4ecdc4', '#45b7d1', '#96ceb4', 
+    '#feca57', '#ff9ff3', '#54a0ff', '#5f27cd',
+    '#00d2d3', '#ff9f43', '#10ac84', '#ee5a24'
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
 }
 
-prevSingles.onclick = () => {
-  if (currentIndexSingles > 0) currentIndexSingles--;
-  updateCarousel(carouselSingles, currentIndexSingles);
-};
-
-nextSingles.onclick = () => {
-  if (currentIndexSingles < carouselSingles.querySelectorAll(".carousel-item").length - 1) currentIndexSingles++;
-  updateCarousel(carouselSingles, currentIndexSingles);
-};
-
-prevDoubles.onclick = () => {
-  if (currentIndexDoubles > 0) currentIndexDoubles--;
-  updateCarousel(carouselDoubles, currentIndexDoubles);
-};
-
-nextDoubles.onclick = () => {
-  if (currentIndexDoubles < carouselDoubles.querySelectorAll(".carousel-item").length - 1) currentIndexDoubles++;
-  updateCarousel(carouselDoubles, currentIndexDoubles);
-};
+// Get first initial of a name
+function getInitial(name) {
+  return name.trim().charAt(0).toUpperCase();
+}
 
 async function loadPlayerData() {
-  // Pulisci caroselli e resetta indici
-  carouselSingles.innerHTML = "";
-  carouselDoubles.innerHTML = "";
-  currentIndexSingles = 0;
-  currentIndexDoubles = 0;
+  containerSingles.innerHTML = "";
+  containerDoubles.innerHTML = "";
 
-  // Carica dati singolare
+  // Singolo
   const singlesDoc = await getDoc(doc(db, "singles", playerName));
   if (singlesDoc.exists()) {
     const data = singlesDoc.data();
-    document.getElementById("singles-elo").textContent = `ELO: ${data.elo || "N/A"}`;
-    const numMatches = (data.matches?.length || 1) - 1; // sottrai 1 per l'elemento iniziale
-    document.getElementById("singles-record").textContent = `Partite giocate: ${numMatches >= 0 ? numMatches : 0}`;
+    
+    // Create stats section for singles
+    const singlesStatsSection = document.createElement("div");
+    singlesStatsSection.className = "stats-section";
+    
+    // ELO card
+    const eloCard = document.createElement("div");
+    eloCard.className = "stats-card";
+    eloCard.innerHTML = `
+      <div class="stats-label">ELO Rating</div>
+      <div class="stats-value">${data.elo || "N/A"}</div>
+    `;
+    
+    // Matches card
+    const numMatches = (data.matches?.length || 0);
+    const matchesCard = document.createElement("div");
+    matchesCard.className = "stats-card";
+    matchesCard.innerHTML = `
+      <div class="stats-label">Partite</div>
+      <div class="stats-value">${numMatches}</div>
+    `;
+    
+    singlesStatsSection.appendChild(eloCard);
+    singlesStatsSection.appendChild(matchesCard);
+    
+    // Insert stats section before the matches container
+    containerSingles.parentNode.insertBefore(singlesStatsSection, containerSingles);
 
     if (numMatches > 0) {
-      data.matches.slice(1).forEach(match => {
-        const matchElement = createMatchElement(match);
-        matchElement.classList.add("carousel-item");
-        carouselSingles.appendChild(matchElement);
+      data.matches?.slice(-5).reverse().forEach(match => {
+        const matchElement = createMatchBox(match);
+        containerSingles.appendChild(matchElement);
       });
-      updateCarousel(carouselSingles, currentIndexSingles);
     } else {
-      carouselSingles.innerHTML = `<div class="carousel-item">Nessuna partita trovata.</div>`;
+      containerSingles.innerHTML = "<p style='text-align: center; color: #666; padding: 20px;'>Nessuna partita trovata.</p>";
     }
   } else {
-    carouselSingles.innerHTML = `<div class="carousel-item">Nessun dato singolare trovato.</div>`;
-    document.getElementById("singles-elo").textContent = "ELO: N/A";
-    document.getElementById("singles-record").textContent = "";
+    containerSingles.innerHTML = "<p style='text-align: center; color: #666; padding: 20px;'>Nessun dato singolare trovato.</p>";
   }
 
-  // Carica dati doppio
+  // Doppio
   const doublesDoc = await getDoc(doc(db, "doubles", playerName));
   if (doublesDoc.exists()) {
     const data = doublesDoc.data();
-    document.getElementById("doubles-elo").textContent = `ELO: ${data.elo || "N/A"}`;
-    const numMatches = (data.matches?.length || 1) - 1;
-    document.getElementById("doubles-record").textContent = `Partite giocate: ${numMatches >= 0 ? numMatches : 0}`;
+    
+    // Create stats section for doubles
+    const doublesStatsSection = document.createElement("div");
+    doublesStatsSection.className = "stats-section";
+    
+    // ELO card
+    const eloCard = document.createElement("div");
+    eloCard.className = "stats-card";
+    eloCard.innerHTML = `
+      <div class="stats-label">ELO Rating</div>
+      <div class="stats-value">${data.elo || "N/A"}</div>
+    `;
+    
+    // Matches card
+    const numMatches = (data.matches?.length || 0);
+    const matchesCard = document.createElement("div");
+    matchesCard.className = "stats-card";
+    matchesCard.innerHTML = `
+      <div class="stats-label">Partite</div>
+      <div class="stats-value">${numMatches}</div>
+    `;
+    
+    doublesStatsSection.appendChild(eloCard);
+    doublesStatsSection.appendChild(matchesCard);
+    
+    // Insert stats section before the matches container
+    containerDoubles.parentNode.insertBefore(doublesStatsSection, containerDoubles);
 
     if (numMatches > 0) {
-      data.matches.slice(1).forEach(match => {
-        const matchElement = createMatchElement(match);
-        matchElement.classList.add("carousel-item");
-        carouselDoubles.appendChild(matchElement);
+      data.matches?.slice(-5).reverse().forEach(match => {
+        const matchElement = createMatchBox(match);
+        containerDoubles.appendChild(matchElement);
       });
-      updateCarousel(carouselDoubles, currentIndexDoubles);
     } else {
-      carouselDoubles.innerHTML = `<div class="carousel-item">Nessuna partita trovata.</div>`;
+      containerDoubles.innerHTML = "<p style='text-align: center; color: #666; padding: 20px;'>Nessuna partita trovata.</p>";
     }
   } else {
-    carouselDoubles.innerHTML = `<div class="carousel-item">Nessun dato doppio trovato.</div>`;
-    document.getElementById("doubles-elo").textContent = "ELO: N/A";
-    document.getElementById("doubles-record").textContent = "";
+    containerDoubles.innerHTML = "<p style='text-align: center; color: #666; padding: 20px;'>Nessun dato doppio trovato.</p>";
   }
 }
 
-function createMatchElement(matchString) {
+function createMatchBox(matchString) {
   const [teamsPart, rest] = matchString.split(" vs ");
   if (!rest) return document.createTextNode(matchString);
 
@@ -125,37 +142,117 @@ function createMatchElement(matchString) {
 
   const team1Names = teamsPart.split(" & ").map(name => abbreviaNome(name.trim()));
   const team2Names = team2Part.split(" & ").map(name => abbreviaNome(name.trim()));
-  
+
   const team1 = team1Names.join(" & ");
   const team2 = team2Names.join(" & ");
 
-  const [setsStr, winStr] = scoreAndWin.split(" → ");
+  const [setsStrRaw, winStr] = scoreAndWin.split(" → ");
   const winner = winStr?.trim();
 
-  const container = document.createElement("div");
-  container.className = "match-container";
+  // Rimuovo eventuali virgole dai set (es: "6-3, 4-6" → "6-3 4-6")
+  const setsStr = setsStrRaw.replace(/,/g, "").trim();
 
-  const teamsDiv = document.createElement("div");
-  teamsDiv.className = "teams";
+  const box = document.createElement("div");
+  box.className = "match-box";
 
-  const team1Div = document.createElement("div");
-  team1Div.className = `team ${winner === team1 ? 'winner' : ''}`;
-  team1Div.textContent = team1;
+  // Main match content container
+  const matchContent = document.createElement("div");
+  matchContent.className = "match-content";
 
-  const team2Div = document.createElement("div");
-  team2Div.className = `team ${winner === team2 ? 'winner' : ''}`;
-  team2Div.textContent = team2;
+  // Players section (left side)
+  const playersSection = document.createElement("div");
+  playersSection.className = "players-section";
 
-  const setsDiv = document.createElement("div");
-  setsDiv.className = "sets";
-  setsDiv.textContent = setsStr;
+  // Determine who is the winner and loser of the overall match
+  const team1IsWinner = team1 === winner;
+  const team2IsWinner = team2 === winner;
 
-  teamsDiv.appendChild(team1Div);
-  teamsDiv.appendChild(team2Div);
-  container.appendChild(teamsDiv);
-  container.appendChild(setsDiv);
+  // Create player rows for Team 1
+  const playerRow1 = document.createElement("div");
+  playerRow1.className = "player-row";
+  const playerInitial1 = document.createElement("div");
+  playerInitial1.className = "player-initial";
+  playerInitial1.style.backgroundColor = getPlayerColor(team1);
+  if (team1.includes(" & ")) {
+    const players = team1.split(" & ");
+    playerInitial1.textContent = players.map(p => getInitial(p)).join("");
+    playerInitial1.style.fontSize = "0.7rem";
+  } else {
+    playerInitial1.textContent = getInitial(team1);
+  }
+  const playerName1 = document.createElement("div");
+  playerName1.className = `player-name ${team1IsWinner ? "winner" : ""}`;
+  playerName1.textContent = team1;
+  playerRow1.appendChild(playerInitial1);
+  playerRow1.appendChild(playerName1);
+  playersSection.appendChild(playerRow1);
 
-  return container;
+  // Create player rows for Team 2
+  const playerRow2 = document.createElement("div");
+  playerRow2.className = "player-row";
+  const playerInitial2 = document.createElement("div");
+  playerInitial2.className = "player-initial";
+  playerInitial2.style.backgroundColor = getPlayerColor(team2);
+  if (team2.includes(" & ")) {
+    const players = team2.split(" & ");
+    playerInitial2.textContent = players.map(p => getInitial(p)).join("");
+    playerInitial2.style.fontSize = "0.7rem";
+  } else {
+    playerInitial2.textContent = getInitial(team2);
+  }
+  const playerName2 = document.createElement("div");
+  playerName2.className = `player-name ${team2IsWinner ? "winner" : ""}`;
+  playerName2.textContent = team2;
+  playerRow2.appendChild(playerInitial2);
+  playerRow2.appendChild(playerName2);
+  playersSection.appendChild(playerRow2);
+
+  // Scores section (right side)
+  const scoresSection = document.createElement("div");
+  scoresSection.className = "scores-section";
+
+  const sets = setsStr.split(" ");
+  sets.forEach(setScore => {
+    const setScores = document.createElement("div");
+    setScores.className = "set-scores";
+
+    const [scoreA, scoreB] = setScore.split("-").map(Number);
+
+    // Score for Team 1
+    const scoreDiv1 = document.createElement("div");
+    scoreDiv1.className = "score-set";
+    if (team1IsWinner) {
+      scoreDiv1.classList.add("score-winner-overall"); // Arancione per il vincitore
+    } else {
+      scoreDiv1.classList.add("score-loser-overall"); // Verde chiaro per il perdente
+    }
+    scoreDiv1.textContent = scoreA;
+    setScores.appendChild(scoreDiv1);
+
+    const setScoreDivider = document.createElement("hr");
+    setScoreDivider.className = "set-score-divider"; // Nuova classe per la linea tra i punteggi del set
+    setScores.appendChild(setScoreDivider);
+
+    // Score for Team 2
+    const scoreDiv2 = document.createElement("div");
+    scoreDiv2.className = "score-set";
+    if (team2IsWinner) {
+      scoreDiv2.classList.add("score-winner-overall"); // Arancione per il vincitore
+    } else {
+      scoreDiv2.classList.add("score-loser-overall"); // Verde chiaro per il perdente
+    }
+    scoreDiv2.textContent = scoreB;
+    setScores.appendChild(scoreDiv2);
+
+    scoresSection.appendChild(setScores);
+  });
+
+  // Assemble the match content
+  matchContent.appendChild(playersSection);
+  matchContent.appendChild(scoresSection);
+  box.appendChild(matchContent);
+
+  return box;
 }
 
 loadPlayerData();

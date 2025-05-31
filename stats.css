@@ -1,183 +1,378 @@
 body {
-  font-family: "Georgia", serif;
-  background-color: #fffbfb;
-  color: #2d2d2d;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f7f4ed;
+  color: #2c2c2c;
+  margin: 0;
   padding: 2rem;
+}
+
+.stats-container {
   max-width: 800px;
   margin: auto;
-  overflow: hidden; /* Hide scrollbars */
-}
-
-h1, h2 {
-  color: #c95917;
-  text-align: center;
-
-}
-
-#player-name {
-  font-weight: bold;
-  color: #1b5e20;
-  text-align: center;
-  background-color: #ffffff;
-  border-radius: 25px;
-  border-color: #c95917;
-  border-width: 3px;
-  border-style: solid;
-  padding: 1px;
-  padding-top: 10px;;
-  width: 500px;
-  position: relative;
-  height: 90px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.stats-section {
-  margin-bottom: 3rem;
-  text-align: center;
-}
-
-.carousel-container {
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  position: relative;
-  text-align: center;
-}
-
-.carousel {
-  display: flex;
-  transition: transform 0.3s ease;
-  width: 100%;
-  overflow: hidden;
-  justify-content: center;
-  
-}
-
-.carousel-item {
   padding: 1rem;
-  flex: 0 0 95%; /* Occupano solo il 90% dello spazio visibile */
-  max-width: 360px; /* Più stretto di prima */
-  box-sizing: border-box;
-  background: #fffbf4;
-  margin: 0 0.5rem;
-  border-radius: 15px;
+}
+
+h1 {
+  color: #4d362d;
+  font-size: 2rem;
+  margin-bottom: 1rem;
   text-align: center;
-  font-weight: bold;
-  border: 1.5px solid #e67e22;
 }
 
-button {
-  background-color: #e67e22;
-  color: white;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
-  border-radius: 0px;
-  height: 25px;
-  width: 30px;
-  border-radius: 25px;;
-
+h2 {
+  font-size: 1.6rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #4d362d;
+  border-left: 4px solid #c65c3c;
+  padding-left: 0.5rem;
 }
 
-button:hover {
-  background-color: #d35400;
+/* Match container styling similar to Roland-Garros */
+.match-box {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: box-shadow 0.2s ease;
 }
 
-.match {
-  border-bottom: 1px solid #ccc;
-  padding: 8px 0;
-}
-.teams {
-  margin-bottom: 2px;
-  margin-left: -20px;;
-}
-.winner {
-  font-style: italic;
-  color: #555;
-}
-.winner strong {
-  color: #1b5e20; /* verde vincitore */
-}
-.team1.winner, .team2.winner {
-  color: #1b5e20;
-}
-.vs {
-  margin: 0 6px;
-  font-weight: normal;
-  color: #999;
-}
-.carousel-item {
-  transition: transform 0.3s ease-in-out;
-  white-space: normal;
-  max-width: 400px;
-  margin: 0 auto;
+.match-box:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-.match-container {
+/* Main match content layout */
+.match-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 8px 0;
-  padding: 8px;
-  border-bottom: px solid #ddd;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-  max-width: 600px;
-  border-radius: 20px;;
+  gap: 16px;
 }
 
-.teams {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 6px;
+/* Players section - left side */
+.players-section {
   flex: 1;
-}
-
-#player1, #player2 , #player3, #player4 {
-  width: 290px;
-  padding: 8px;
-  text-align: center;
-}
-.team {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 12px;
-}
-
-.scores {
-  display: flex;
-  gap: 6px;
-}
-
-.set-score {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  gap: 12px;
 }
 
-.score {
-  width: 28px;
-  height: 28px;
-  border: 1.5px solid #333;
-  border-radius: 13px;
-  margin: 1px 0;
+/* Individual player row */
+.player-row {
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-weight: bold;
-  background-color: #fffbfb;
+  gap: 12px;
+  padding: 8px 0;
 }
 
-.score1 {
-  border-color: #c95917; /* arancione per team1 */
-  color: #c95917;
+/* Player initial circle */
+.player-initial {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ff6b35;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  text-transform: uppercase;
 }
 
-.score2 {
-  border-color: #2e3d30; /* blu per team2 */
-  color: #2e3d30;
+/* Player name styling */
+.player-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+  line-height: 1.3;
 }
 
+.player-name.winner {
+  color: #2c7a2c;
+  font-weight: 700;
+}
+
+/* Remove ranking display */
+
+/* Score section - right side */
+.scores-section {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Individual set scores */
+.set-scores {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 32px;
+}
+
+.score-set {
+  background-color: #f8f8f8;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+  text-align: center;
+  line-height: 1;
+}
+
+/* Modifica il colore del testo per il vincitore a un arancione più scuro per coerenza */
+.player-name.winner {
+  color: #ff6b35; /* Un arancione più scuro che si abbini al tema */
+  font-weight: 700;
+}
+
+
+/* Nuova classe per la linea divisoria che copre anche i punteggi */
+.set-score-divider {
+  border: none;
+  border-top: 1px solid #e0e0e0; /* Colore più chiaro per la linea */
+  margin: 12px 0; /* Spazio sopra e sotto la linea */
+  /* Assicurati che si estenda per tutta la larghezza del match-box */
+  position: relative;
+  width: 870%;
+  position: relative;
+  transform: translateX(-93%);
+}
+
+/* Colore arancione per i punteggi del vincitore complessivo */
+.score-set.score-winner-overall {
+  background-color: #ff6b35; /* Arancione dalla palette esistente */
+  color: white;
+  border-color: #e55a2b;
+}
+
+/* Nuovo colore verde più soft per i punteggi del perdente complessivo */
+.score-set.score-loser-overall {
+  background-color: #d4edda; /* Un verde chiaro e soft */
+  color: #28a745; /* Testo verde più scuro per il contrasto */
+  border-color: #c3e6cb;
+}
+
+.score-set.winner-set {
+  background-color: #ff6b35;
+  color: white;
+  border-color: #e55a2b;
+  font-weight: 700;
+}
+
+/* Match info section */
+.match-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.match-date {
+  font-weight: 500;
+}
+
+.match-surface {
+  background: #f0f0f0;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+
+/* Stats info styling - improved */
+.stats-section {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.stats-card {
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  color: white;
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+  text-align: center;
+  min-width: 140px;
+  transition: transform 0.2s ease;
+}
+
+.stats-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+}
+
+.stats-card .stats-label {
+  font-size: 0.85rem;
+  opacity: 0.9;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stats-card .stats-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Responsive adjustments - improved mobile layout */
+@media (max-width: 768px) {
+  .match-content {
+    gap: 12px;
+  }
+  
+  .players-section {
+    flex: 1;
+    min-width: 0; /* Allow flex shrinking */
+  }
+  
+  .scores-section {
+    flex-shrink: 0;
+    min-width: fit-content;
+  }
+  
+  .player-name {
+    font-size: 0.95rem;
+    /* Prevent text overflow */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .stats-section {
+    gap: 12px;
+  }
+  
+  .stats-card {
+    min-width: 120px;
+    padding: 12px 16px;
+  }
+  
+  .stats-card .stats-value {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 1rem;
+  }
+  
+  .match-box {
+    padding: 12px;
+  }
+  
+  .match-content {
+    flex-direction: row; /* Keep horizontal even on small screens */
+    align-items: stretch;
+  }
+  
+  .players-section {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .player-row {
+    gap: 8px;
+    padding: 4px 0;
+  }
+  
+  .player-initial {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+  
+  .player-name {
+    font-size: 0.9rem;
+    min-width: 0;
+    flex: 1;
+  }
+  
+  .scores-section {
+    gap: 6px;
+    margin-left: 8px;
+  }
+  
+  .set-scores {
+    min-width: 28px;
+  }
+  
+  .score-set {
+    padding: 4px 6px;
+    font-size: 0.8rem;
+  }
+  
+  .match-info {
+    flex-direction: column;
+    gap: 4px;
+    text-align: center;
+  }
+  
+  .stats-section {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .stats-card {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+/* Modifica il colore del testo per il vincitore a un arancione più scuro per coerenza */
+.player-name.winner {
+  color: #ff6b35; /* Un arancione più scuro che si abbini al tema */
+  font-weight: 700;
+}
+
+
+/* Nuova classe per la linea divisoria che copre anche i punteggi */
+.score-divider {
+  border: none;
+  border-top: 1px solid #e0e0e0; /* Colore più chiaro per la linea */
+  margin: 12px 0; /* Spazio sopra e sotto la linea */
+  /* Assicurati che si estenda per tutta la larghezza del match-box */
+  width: 100%;
+}
+
+/* Colore arancione per i punteggi del vincitore complessivo */
+.score-set.score-winner-overall {
+  background-color: #ff6b35; /* Arancione dalla palette esistente */
+  color: white;
+  border-color: #e55a2b;
+}
+
+/* Nuovo colore verde più soft per i punteggi del perdente complessivo */
+.score-set.score-loser-overall {
+  background-color: #d4edda; /* Un verde chiaro e soft */
+  color: #28a745; /* Testo verde più scuro per il contrasto */
+  border-color: #c3e6cb;
+}
+
+/* Rimuovi o modifica lo stile di .score-set.winner-set se non vuoi che influisca
+   più sul colore di sfondo, dato che ora usiamo .score-winner-overall/.score-loser-overall */
+.score-set.winner-set {
+  /* Questo stile non è più strettamente necessario per il colore di sfondo,
+     ma puoi usarlo per aggiungere un bordo o altri effetti se desideri
+     segnalare chi ha vinto un set specifico, indipendentemente dal match.
+     Per ora, lo commento per evitare conflitti di colore. */
+  /* background-color: #ff6b35; */
+  /* color: white; */
+  /* border-color: #e55a2b; */
+  /* font-weight: 700; */
+}
