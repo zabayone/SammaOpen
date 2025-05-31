@@ -464,6 +464,8 @@ button:hover {
   .modal {
     padding: 18px;
     border-radius: 10px;
+    width: 90%;
+    max-width: 250px; /* Larghezza massima per schermi piccoli */
   }
 
   .modal h2 {
@@ -475,15 +477,18 @@ button:hover {
     font-size: 0.95em;
     padding: 8px 12px;
     margin-bottom: 20px;
+    width: 80%;
   }
 
   .modal .button-group {
     flex-direction: column; /* Impila i pulsanti in verticale */
-    gap: 10px;
+    gap: 10px; /* Spazio tra i pulsanti impilati */
+    align-items: center; /* Centra i pulsanti nella colonna */
   }
 
   .modal button {
-    width: 80%; /* Occupa più larghezza */
-    max-width: none;
+    width: 80%; /* Occupa una buona parte della larghezza disponibile, adattabile */
+    max-width: 250px; /* Imposta una larghezza massima per non farli diventare troppo larghi su tablet piccoli */
+    margin: 0 auto; /* Centra i pulsanti individualmente se non sono già centrati da align-items */
   }
 }

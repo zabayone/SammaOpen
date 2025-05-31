@@ -65,13 +65,17 @@
         document.getElementById('mainContainer').style.display = 'block';
         }
     </script>
-    <div id="passkeyModal" class="modal">
-  <div class="modal-content">
-    <input type="password" id="passkeyInput" placeholder="Inserisci la password" />
-    <div class="modal-buttons">
-      <button id="confirmPasskey">Conferma</button>
-      <button id="cancelPasskey">Annulla</button>
-    </div>
+    <div id="passkeyModal" class="modal-overlay">
+        <div class="modal">
+            <h2>Inserisci Passkey</h2>
+            <input type="password" id="passkeyInput" placeholder="Passkey">
+                <div class="button-group">
+                    <button id="confirmPasskey">Conferma</button>
+                    <button id="cancelPasskey" class="cancel-btn">Annulla</button>
+                </div>
+        </div>
+</div>
+
   </div>
 </div>
 

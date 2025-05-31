@@ -107,8 +107,8 @@ function parseResult(str) {
 
 async function addResult() {
   try {
-    // Mostra modale
-    document.getElementById("passkeyModal").style.display = "flex";
+    // Mostra il modale aggiungendo la classe 'active' all'overlay
+    document.getElementById("passkeyModal").classList.add("active");
 
     return new Promise((resolve, reject) => {
       const confirmBtn = document.getElementById("confirmPasskey");
@@ -122,13 +122,15 @@ async function addResult() {
           return;
         }
 
-        document.getElementById("passkeyModal").style.display = "none";
+        // Nascondi il modale rimuovendo la classe 'active'
+        document.getElementById("passkeyModal").classList.remove("active");
         document.getElementById("passkeyInput").value = "";
         resolve(realAddResult()); // Chiama la vera funzione
       };
 
       cancelBtn.onclick = () => {
-        document.getElementById("passkeyModal").style.display = "none";
+        // Nascondi il modale rimuovendo la classe 'active'
+        document.getElementById("passkeyModal").classList.remove("active");
         document.getElementById("passkeyInput").value = "";
         reject("Annullato");
       };
