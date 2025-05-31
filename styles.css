@@ -95,6 +95,8 @@ body {
   padding: 15px;
   width: 90%;
   margin: 0 auto;
+  text-align: center;
+  align-items: center;
 }
 
 .team {
@@ -245,7 +247,23 @@ button:hover {
   color: #2e3d30;
   text-align: center;
   justify-content: center;
+  display: none;
 }
+
+#setResults{
+  width: 87%;
+  text-align: center;
+  
+}
+
+#player1, #player2, #player3, #player4{
+  width: 100%;
+  text-align: center;
+  left: 50%;
+  transform: translateX(-50%);
+  position: relative;
+}
+
 
 /* Titolo modale */
 .modal h2 {

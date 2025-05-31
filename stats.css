@@ -135,6 +135,11 @@ button:hover {
   flex: 1;
 }
 
+#player1, #player2 , #player3, #player4 {
+  width: 290px;
+  padding: 8px;
+  text-align: center;
+}
 .team {
   white-space: nowrap;
   overflow: hidden;
