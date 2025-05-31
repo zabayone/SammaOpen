@@ -196,7 +196,7 @@ h2 {
   gap: 16px;
   margin-bottom: 20px;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-direction: left ;
 }
 
 .stats-card {
@@ -254,6 +254,8 @@ h2 {
   }
   
   .stats-section {
+    flex-direction: left;
+    align-items: center;
     gap: 12px;
   }
   
@@ -324,14 +326,13 @@ h2 {
   }
   
   .stats-section {
-    flex-direction: column;
+    flex-direction: left;
     align-items: center;
   }
   
   .stats-card {
-    width: 100%;
-    max-width: 200px;
-  }
+    width: 10%;
+    max-width: 100px;
 }
 
 /* Modifica il colore del testo per il vincitore a un arancione più scuro per coerenza */
