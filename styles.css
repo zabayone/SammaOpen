@@ -1,29 +1,101 @@
 @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Playfair+Display:wght@600&display=swap');
 
+/* --- Stili Generali --- */
 html {
   height: 100%;
   font-size: 16px;
-  background: linear-gradient(to bottom, #ffffff, #fff9ee);
+  background: linear-gradient(to bottom, #f7f4ed, #fff9ee); /* Sfumatura chiara */
   overflow-x: hidden;
   scroll-behavior: smooth;
 }
 
 body {
-  font-family: 'Merriweather', 'Playfair Display', serif;
+  font-family: 'Merriweather', serif; /* Font principale più leggibile */
   margin: 0;
-  padding: 10px;
-  color: #2e3d30;
-  background: linear-gradient(to bottom, #ffffff, #fff9ee);
+  padding: 1.5rem; /* Padding uniforme */
+  color: #2c2c2c; /* Colore testo scuro */
+  background: linear-gradient(to bottom, #f7f4ed, #fff9ee); /* Sfumatura chiara */
   max-width: 100%;
   overflow-x: hidden;
 }
 
-
+/* --- Logo --- */
 #logo img {
-  height: 60px;
+  height: 70px; /* Logo leggermente più grande */
   border-radius: 50%;
-  border: 3px solid #c95917;
+  border: 3px solid #cb4d04; /* Bordo più deciso */
   background-color: #fff9ee;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombra leggera */
+}
+
+/* --- Selettore Tab (Tab Switch) --- */
+.tab-switch {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin: 20px auto; /* Margine superiore più consistente */
+  border: 2px solid #a74a15; /* Bordo più caldo */
+  border-radius: 30px; /* Angoli più arrotondati */
+  overflow: hidden;
+  width: 90%;
+  max-width: 450px; /* Larghezza massima per i tab */
+  background-color: #fcf8f3; /* Sfondo chiaro per i tab */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Ombra leggera */
+}
+
+.tab-switch input {
+  display: none;
+}
+
+.tab-switch label {
+  flex: 1;
+  text-align: center;
+  padding: 12px 0; /* Padding aumentato */
+  cursor: pointer;
+  z-index: 2;
+  position: relative;
+  font-weight: 600; /* Leggermente più spesso */
+  color: #4d362d; /* Colore testo più caldo */
+  font-family: 'Playfair Display', serif;
+  font-size: 1em; /* Dimensione leggermente aumentata */
+  transition: color 0.3s ease;
+}
+
+.tab-switch input:checked + label {
+  color: #ffffff; /* Testo bianco quando selezionato */
+}
+
+.tab-switch .slider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  background-color: #ff6b35; /* Arancione vivace come nel secondo esempio */
+  border-radius: 30px;
+  z-index: 1;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Transizione più fluida */
+}
+
+#doubles:checked ~ #tab-doubles ~ .slider {
+  left: 50%;
+}
+
+/* --- Form di Inserimento Risultati (Match Form) --- */
+.match-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Spazio maggiore tra gli elementi */
+  background-color: #ffffff; /* Sfondo bianco puro */
+  border: 1px solid #e0e0e0; /* Bordo più sottile e chiaro */
+  border-radius: 12px; /* Angoli meno arrotondati */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Ombra più pronunciata */
+  padding: 20px; /* Padding aumentato */
+  width: 90%;
+  max-width: 500px; /* Larghezza massima per il form */
+  margin: 20px auto; /* Margine superiore e inferiore */
+  text-align: center;
+  align-items: center;
 }
 
 .add-result {
@@ -34,168 +106,121 @@ body {
   position: relative;
   transform: translateX(-50%);
   left: 50%;
-  color: #c95917;
+  color: #cb4d04; /* Colore più caldo */
   font-family: 'Playfair Display', serif;
-  font-size: 1.2em;
-}
-
-.tab-switch {
-  display: flex;
-  justify-content: space-between;
-  position: relative;
-  margin: 15px auto;
-  border: 2px solid #2e3d30;
-  border-radius: 25px;
-  overflow: hidden;
-  width: 90%;
-  background-color: #f3eee683;
-}
-
-.tab-switch input {
-  display: none;
-}
-
-.tab-switch label {
-  flex: 1;
-  text-align: center;
-  padding: 10px 0;
-  cursor: pointer;
-  z-index: 2;
-  position: relative;
-  font-weight: bold;
-  color: #0b2e0f;
-  font-family: 'Playfair Display', serif;
-  font-size: 0.9em;
-}
-
-.tab-switch .slider {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 50%;
-  background-color: #cb4d04ca;
-  border-radius: 25px;
-  z-index: 1;
-  transition: left 0.3s ease;
-}
-
-#doubles:checked ~ #tab-doubles ~ .slider {
-  left: 50%;
-}
-
-.match-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background-color: #fff9ee;
-  border: 2px solid #c95917;
-  border-radius: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  padding: 15px;
-  width: 90%;
-  margin: 0 auto;
-  text-align: center;
-  align-items: center;
+  font-size: 1.3em; /* Dimensione testo leggermente aumentata */
+  font-weight: 600;
 }
 
 .team {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px; /* Spazio leggermente aumentato */
   justify-content: center;
   align-items: center;
-  width: 95%;
+  width: 100%; /* Larghezza piena */
 }
 
 .vs {
   text-align: center;
-  font-weight: bold;
-  margin: 5px 0;
-  color: #c95917;
-  font-size: 1.2em;
+  font-weight: 700; /* Più spesso */
+  margin: 8px 0; /* Margine leggermente aumentato */
+  color: #ff6b35; /* Arancione vivace */
+  font-size: 1.5em; /* Dimensione più grande */
+  font-family: 'Playfair Display', serif;
 }
 
-select, input[type="text"] {
+select,
+input[type="text"] {
   width: 100%;
-  padding: 12px;
-  font-size: 16px; /* Previene lo zoom su iOS */
-  border: 1px solid #aaa;
-  border-radius: 25px;
-  background-color: #ede7e2;
+  padding: 12px 15px; /* Padding interno aumentato */
+  font-size: 1em; /* Dimensione font consistente */
+  border: 1px solid #ccc; /* Bordo più chiaro */
+  border-radius: 8px; /* Angoli meno arrotondati */
+  background-color: #fcfcfc; /* Sfondo molto chiaro */
   font-family: 'Merriweather', serif;
+  color: #333;
+  box-sizing: border-box; /* Include padding e border nella larghezza */
 }
 
 button {
-  background-color: #2e3d30;
+  background-color: #ff6b35; /* Arancione vivace */
   color: white;
-  padding: 12px 20px;
+  padding: 14px 25px; /* Padding aumentato */
   border: none;
-  border-radius: 25px;
-  font-size: 0.95em;
+  border-radius: 8px; /* Angoli meno arrotondati */
+  font-size: 1.05em; /* Dimensione leggermente più grande */
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 700; /* Più spesso */
   font-family: 'Playfair Display', serif;
   width: 100%;
-  margin: 5px 0;
+  margin: 10px 0 5px; /* Margine superiore aumentato */
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
-  background-color: #2e3d30;
+  background-color: #e55a2b; /* Arancione più scuro al hover */
+  transform: translateY(-1px); /* Piccolo effetto al hover */
 }
 
+/* --- Tabella Classifica (Leaderboard) --- */
 #tableWrapper {
-  border: 2px solid #2e3d30;
-  border-radius: 25px;
+  border: 1px solid #e0e0e0; /* Bordo sottile */
+  border-radius: 12px; /* Angoli meno arrotondati */
   overflow: hidden;
-  background-color: #2e3d30;
-  margin: 15px auto;
+  background-color: #ffffff; /* Sfondo bianco */
+  margin: 25px auto; /* Margine più generoso */
   width: 95%;
+  max-width: 800px; /* Larghezza massima per la tabella */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Ombra pronunciata */
 }
 
 #leaderboard table {
   width: 100%;
-  overflow: hidden;
   border-collapse: collapse;
-  background-color: #fff9ee;
-  margin-top: 5px;
-  font-size: 0.9em;
+  background-color: #ffffff;
+  font-size: 0.95em; /* Dimensione testo leggermente aumentata */
 }
 
-#leaderboard th, #leaderboard td {
-  padding: 8px 4px;
+#leaderboard th,
+#leaderboard td {
+  padding: 12px 8px; /* Padding aumentato */
   text-align: center;
-  font-size: 0.95em;
+  font-size: 0.9em;
   font-family: 'Merriweather', serif;
 }
 
 #leaderboard th {
-  background-color: #2e3d30;
+  background-color: #f4722b; /* Colore intestazione più caldo */
   color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 #leaderboard tr:nth-child(even) {
-  background-color: #f3eee6;
+  background-color: #fdf8f2; /* Sfondo alternato più chiaro */
 }
 
 #leaderboard tr:nth-child(odd) {
-  background-color: #fdf8f2;
+  background-color: #ffffff; /* Sfondo alternato bianco */
 }
 
 #leaderboard tr:hover {
-  background-color: inherit;
+  background-color: #f2ede7; /* Colore al hover */
 }
 
 #leaderboard td:first-child {
   position: relative;
   z-index: 1;
-  font-weight: bold;
-  color: #2e3d30;
+  font-weight: 700; /* Più spesso */
+  color: #333;
 }
 
 #leaderboard td:first-child span.rank-number {
   position: relative;
   z-index: 2;
+  font-size: 1.1em; /* Numero classifica leggermente più grande */
 }
 
 #leaderboard td:first-child::before {
@@ -203,116 +228,262 @@ button:hover {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 28px;
-  height: 28px;
+  width: 32px; /* Cerchio leggermente più grande */
+  height: 32px; /* Cerchio leggermente più grande */
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background-color: #d9c9b2;
+  background-color: #ede7e2; /* Colore di default per il cerchio */
   z-index: 1;
 }
 
-#leaderboard tr:nth-child(2) td:first-child::before { background: gold; }
-#leaderboard tr:nth-child(3) td:first-child::before { background: silver; }
-#leaderboard tr:nth-child(4) td:first-child::before { background: #cd7f32; }
+/* Colori per i primi 3 posti come nel secondo esempio */
+#leaderboard tr:nth-child(2) td:first-child::before {
+  background: gold;
+} /* Oro */
+#leaderboard tr:nth-child(3) td:first-child::before {
+  background: silver;
+} /* Argento */
+#leaderboard tr:nth-child(4) td:first-child::before {
+  background: #cd7f32;
+} /* Bronzo */
 
-#setResults{
-  width: 95%;
-}
-
-/* Overlay sfondo */
+/* --- Modal --- */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 95%;
+  width: 100%; /* Larghezza completa */
   height: 100%;
-  background: rgba(230, 200, 170, 0.6); /* trasparenza calda */
+  background: rgba(0, 0, 0, 0.4); /* Sfondo semi-trasparente scuro */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9999;
+  opacity: 0; /* Nascosto di default */
+  visibility: hidden; /* Nascosto di default */
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-/* Contenitore modale */
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
 .modal {
-  margin-top: 40px;
-  background-color: #fff9ee;
-  border: 2px solid #c95917; /* colore arancio Roland Garros */
-  border-radius: 25px;
-  padding: 25px 30px;
-  max-width: 400px;
-  width: 305px;
-  box-shadow: 0 8px 20px rgba(201, 89, 23, 0.3);
+  background-color: #ffffff; /* Sfondo bianco puro */
+  border: 1px solid #e0e0e0; /* Bordo sottile */
+  border-radius: 12px; /* Angoli meno arrotondati */
+  padding: 30px; /* Padding generoso */
+  max-width: 450px; /* Larghezza massima */
+  width: 90%; /* Larghezza responsiva */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); /* Ombra pronunciata */
   font-family: 'Merriweather', serif;
-  color: #2e3d30;
+  color: #2c2c2c;
   text-align: center;
+  display: flex; /* Utilizza flex per centrare i contenuti */
+  flex-direction: column;
   justify-content: center;
-  display: none;
+  align-items: center;
+  transform: translateY(-20px); /* Leggero spostamento iniziale */
+  opacity: 0; /* Nascosto di default */
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-#setResults{
-  width: 87%;
-  text-align: center;
-  
+.modal-overlay.active .modal {
+  transform: translateY(0); /* Torna alla posizione normale */
+  opacity: 1;
 }
 
-#player1, #player2, #player3, #player4{
-  width: 100%;
-  text-align: center;
-  left: 50%;
-  transform: translateX(-50%);
-  position: relative;
-}
-
-
-/* Titolo modale */
 .modal h2 {
-  margin-top: 0;
   font-weight: 700;
-  font-size: 1.8em;
-  margin-bottom: 15px;
-  color: #c95917;
+  font-size: 2.2em; /* Titolo più grande */
+  margin-bottom: 20px; /* Margine inferiore aumentato */
+  color: #ff6b35; /* Arancione vivace */
+  font-family: 'Playfair Display', serif;
 }
 
-/* Input passkey */
 .modal input[type="password"] {
   width: 100%;
-  padding: 12px 15px;
-  font-size: 1em;
-  border: 1.5px solid #c95917;
-  border-radius: 25px;
-  background-color: #ede7e2;
-  color: #2e3d30;
-  margin-bottom: 20px;
+  padding: 12px 18px; /* Padding aumentato */
+  font-size: 1.1em; /* Dimensione font aumentata */
+  border: 1px solid #ccc; /* Bordo più chiaro */
+  border-radius: 8px; /* Angoli meno arrotondati */
+  background-color: #fcfcfc;
+  color: #333;
+  margin-bottom: 25px; /* Margine inferiore aumentato */
   box-sizing: border-box;
   text-align: center;
 }
 
-/* Pulsanti */
+.modal .button-group {
+  display: flex;
+  justify-content: center;
+  gap: 15px; /* Spazio tra i pulsanti */
+  width: 100%;
+}
+
 .modal button {
-  background-color: #c95917;
+  background-color: #ff6b35; /* Arancione vivace */
   color: white;
   border: none;
   padding: 12px 25px;
   font-size: 1em;
-  border-radius: 25px;
+  border-radius: 8px; /* Angoli meno arrotondati */
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-  margin: 0 10px;
-  width: 42%;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  flex: 1; /* Distribuisce lo spazio equamente */
+  max-width: 150px; /* Larghezza massima per i pulsanti */
 }
 
 .modal button:hover {
-  background-color: #a74a15;
+  background-color: #e55a2b;
+  transform: translateY(-1px);
 }
 
-/* Pulsante annulla */
 .modal .cancel-btn {
-  background-color: #2e3d30;
+  background-color: #4d362d; /* Colore più caldo per annulla */
 }
 
 .modal .cancel-btn:hover {
-  background-color: #1a2618;
+  background-color: #3a2a22; /* Scurisce al hover */
 }
 
+/* --- Sezione Set Results (Regola i giocatori per il form) --- */
+#setResults {
+  width: 100%; /* Larghezza piena nel form */
+  text-align: center;
+}
+
+#player1,
+#player2,
+#player3,
+#player4 {
+  width: 100%;
+  text-align: center;
+  /* Rimuovi le proprietà di posizionamento relative se non necessarie altrimenti */
+  /* left: 50%; */
+  /* transform: translateX(-50%); */
+  /* position: relative; */
+}
+
+/* --- Media Queries per la Responsività --- */
+@media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+
+  .tab-switch,
+  .match-form,
+  #tableWrapper {
+    width: 95%; /* Leggermente più grandi su schermi medi */
+  }
+
+  .tab-switch label {
+    font-size: 0.9em;
+  }
+
+  .modal {
+    padding: 20px;
+    width: 95%;
+  }
+
+  .modal h2 {
+    font-size: 1.8em;
+  }
+
+  .modal input[type="password"] {
+    padding: 10px 15px;
+  }
+
+  .modal button {
+    padding: 10px 20px;
+    font-size: 0.95em;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 0.8rem;
+  }
+
+  #logo img {
+    height: 55px;
+  }
+
+  .add-result {
+    font-size: 1.1em;
+  }
+
+  .tab-switch {
+    border-radius: 25px;
+  }
+
+  .tab-switch label {
+    font-size: 0.85em;
+    padding: 10px 0;
+  }
+
+  .tab-switch .slider {
+    border-radius: 25px;
+  }
+
+  .match-form {
+    padding: 15px;
+    gap: 10px;
+    border-radius: 10px;
+  }
+
+  .vs {
+    font-size: 1.3em;
+  }
+
+  select,
+  input[type="text"],
+  button {
+    padding: 10px;
+    font-size: 0.9em;
+    border-radius: 6px;
+  }
+
+  #tableWrapper {
+    border-radius: 10px;
+  }
+
+  #leaderboard th,
+  #leaderboard td {
+    padding: 10px 5px;
+    font-size: 0.85em;
+  }
+
+  #leaderboard td:first-child::before {
+    width: 28px;
+    height: 28px;
+  }
+
+  .modal {
+    padding: 18px;
+    border-radius: 10px;
+  }
+
+  .modal h2 {
+    font-size: 1.6em;
+    margin-bottom: 15px;
+  }
+
+  .modal input[type="password"] {
+    font-size: 0.95em;
+    padding: 8px 12px;
+    margin-bottom: 20px;
+  }
+
+  .modal .button-group {
+    flex-direction: column; /* Impila i pulsanti in verticale */
+    gap: 10px;
+  }
+
+  .modal button {
+    width: 80%; /* Occupa più larghezza */
+    max-width: none;
+  }
+}
