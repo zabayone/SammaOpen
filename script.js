@@ -3,7 +3,8 @@ import { checkPasskey } from './server.js';
 
 const players = [
   "Nicola Nespoli", "Mattia Casulli", "Andrea Redaelli", "Giacomo Belli",
-  "Christian Joli", "Giacomo Meazzi", "Davide Saccani"
+  "Christian Joli", "Giacomo Meazzi", "Davide Saccani", "Margherita Dassisti",
+  "Ospite" // Giocatore fittizio per partite con esterni
 ];
 
 let data = {
@@ -14,9 +15,30 @@ let currentTab = 'singles';
 
 async function init() {
   data = await loadLeaderboardData(players);
+  
+  // Aggiungi il giocatore Ospite se non esiste già
+  addGuestPlayer();
+  
   populateSelects();
   renderLeaderboard();
   setupEventListeners();
+}
+
+function addGuestPlayer() {
+  const guestData = {
+    elo: 1200,
+    wins: 0,
+    losses: 0,
+    matches: []
+  };
+  
+  // Aggiungi Ospite sia per singles che doubles se non esiste
+  if (!data.singles["Ospite"]) {
+    data.singles["Ospite"] = { ...guestData };
+  }
+  if (!data.doubles["Ospite"]) {
+    data.doubles["Ospite"] = { ...guestData };
+  }
 }
 
 function populateSelects() {
@@ -43,11 +65,7 @@ function setupEventListeners() {
   document.getElementById('addResultButton').addEventListener('click', addResult);
   document.getElementById('singles').addEventListener('change', updateVsPosition);
   document.getElementById('doubles').addEventListener('change', updateVsPosition);
-  document.getElementById
-
 }
-
-
 
 function switchTab(tab) {
   currentTab = tab;
@@ -65,7 +83,9 @@ function switchTab(tab) {
 function renderLeaderboard() {
   const leaderboard = document.getElementById('leaderboard');
   const sorted = Object.entries(data[currentTab])
+    .filter(([name]) => name !== "Ospite") // Esclude Ospite dalla classifica
     .sort((a, b) => b[1].elo - a[1].elo);
+  
   if (!leaderboard) return;
   leaderboard.innerHTML = `
     <table>
@@ -186,10 +206,14 @@ async function realAddResult() {
       data.singles[winner].wins++;
       data.singles[loser].losses++;
 
-      await saveMatchResult('singles', {
-        [p1]: data.singles[p1],
-        [p2]: data.singles[p2]
-      });
+      // Salva solo i giocatori reali (non Ospite) nel database
+      const playersToSave = {};
+      if (p1 !== "Ospite") playersToSave[p1] = data.singles[p1];
+      if (p2 !== "Ospite") playersToSave[p2] = data.singles[p2];
+      
+      if (Object.keys(playersToSave).length > 0) {
+        await saveMatchResult('singles', playersToSave);
+      }
 
     } else if (currentTab === 'doubles') {
       const p1 = document.getElementById('player1').value;
@@ -252,18 +276,21 @@ async function realAddResult() {
       winnerTeam.forEach(p => data.doubles[p].wins++);
       loserTeam.forEach(p => data.doubles[p].losses++);
 
-      await saveMatchResult('doubles', {
-        [winnerTeam[0]]: data.doubles[winnerTeam[0]],
-        [winnerTeam[1]]: data.doubles[winnerTeam[1]],
-        [loserTeam[0]]: data.doubles[loserTeam[0]],
-        [loserTeam[1]]: data.doubles[loserTeam[1]],
+      // Salva solo i giocatori reali (non Ospite) nel database
+      const playersToSave = {};
+      [...winnerTeam, ...loserTeam].forEach(p => {
+        if (p !== "Ospite") {
+          playersToSave[p] = data.doubles[p];
+        }
       });
+      
+      if (Object.keys(playersToSave).length > 0) {
+        await saveMatchResult('doubles', playersToSave);
+      }
     }
 
     renderLeaderboard();
-
-  }
-
+}
 
 function showPlayer(name) {
   const player = data[currentTab][name];
@@ -308,15 +335,12 @@ function updateVsPosition() {
   }
 }
 
-
-
-// Esegui la funzione all’avvio e ogni volta che cambia la tab
+// Esegui la funzione all'avvio e ogni volta che cambia la tab
 document.querySelectorAll('input[name="matchType"]').forEach(input => {
   input.addEventListener('change', updateVsPosition);
 });
 
 // Chiamata iniziale per posizionare bene il vs
 updateVsPosition();
-
 
 init();
