@@ -19,15 +19,6 @@ body {
   overflow-x: hidden;
 }
 
-/* --- Logo --- */
-#logo img {
-  height: 70px; /* Logo leggermente più grande */
-  border-radius: 50%;
-  border: 3px solid #cb4d04; /* Bordo più deciso */
-  background-color: #fff9ee;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombra leggera */
-}
-
 /* --- Selettore Tab (Tab Switch) --- */
 .tab-switch {
   display: flex;
@@ -71,7 +62,7 @@ body {
   bottom: 0;
   left: 0;
   width: 50%;
-  background-color: #ff6b35; /* Arancione vivace come nel secondo esempio */
+  background-color: #d5653c; /* Arancione vivace come nel secondo esempio */
   border-radius: 30px;
   z-index: 1;
   transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Transizione più fluida */
@@ -125,7 +116,7 @@ body {
   text-align: center;
   font-weight: 700; /* Più spesso */
   margin: 8px 0; /* Margine leggermente aumentato */
-  color: #ff6b35; /* Arancione vivace */
+  color: #ca613b; /* Arancione vivace */
   font-size: 1.5em; /* Dimensione più grande */
   font-family: 'Playfair Display', serif;
 }
@@ -159,7 +150,7 @@ button {
 }
 
 button:hover {
-  background-color: #e55a2b; /* Arancione più scuro al hover */
+  background-color: #c56140; /* Arancione più scuro al hover */
   transform: translateY(-1px); /* Piccolo effetto al hover */
 }
 
@@ -191,7 +182,7 @@ button:hover {
 }
 
 #leaderboard th {
-  background-color: #f4722b; /* Colore intestazione più caldo */
+  background-color: #d1703b; /* Colore intestazione più caldo */
   color: white;
   font-weight: 700;
   text-transform: uppercase;
@@ -323,7 +314,7 @@ button:hover {
 }
 
 .modal button {
-  background-color: #ff6b35; /* Arancione vivace */
+  background-color: #c0603d; /* Arancione vivace */
   color: white;
   border: none;
   padding: 12px 25px;
@@ -337,7 +328,7 @@ button:hover {
 }
 
 .modal button:hover {
-  background-color: #e55a2b;
+  background-color: #bb5f40;
   transform: translateY(-1px);
 }
 
@@ -365,6 +356,31 @@ button:hover {
   /* left: 50%; */
   /* transform: translateX(-50%); */
   /* position: relative; */
+}
+
+.header{
+  text-align: center;
+  margin-bottom: 20px; /* Spazio sotto l'intestazione */
+  justify-content: center;
+  align-items: center;
+}
+
+.logo{
+  left: 50%;
+  transform: translateX(-50%);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px; /* Spazio sotto il logo */
+  width: 80px;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5em; /* Dimensione del titolo principale */
+  color: #a25a3e; /* Colore caldo per il titolo */
+  margin: 0; /* Rimuove margini predefiniti */
 }
 
 /* --- Media Queries per la Responsività --- */

@@ -16,7 +16,7 @@ const db = getFirestore(app);
 
 const urlParams = new URLSearchParams(window.location.search);
 const playerName = decodeURIComponent(urlParams.get("name"));
-document.getElementById("player-name").innerHTML = `Statistiche:<br>${abbreviaNome(playerName)}`;
+document.getElementById("player-name").innerHTML = `Statistiche:  ${abbreviaNome(playerName)}`;
 
 const containerSingles = document.getElementById("matchlist-singles");
 const containerDoubles = document.getElementById("matchlist-doubles");

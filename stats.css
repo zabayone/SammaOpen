@@ -12,11 +12,12 @@ body {
   padding: 1rem;
 }
 
-h1 {
-  color: #4d362d;
-  font-size: 2rem;
+h3 {
+  font-size: 1.8rem;
   margin-bottom: 1rem;
-  text-align: center;
+  color: #4d362d;
+  border-bottom: 3px solid #c65c3c;
+
 }
 
 h2 {
@@ -93,7 +94,7 @@ h2 {
 }
 
 .player-name.winner {
-  color: #2c7a2c;
+  color: #41b641;
   font-weight: 700;
 }
 
@@ -200,7 +201,7 @@ h2 {
 }
 
 .stats-card {
-  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  background: linear-gradient(135deg, #d4704c 0%, #f7931e 100%);
   color: white;
   padding: 16px 24px;
   border-radius: 12px;
@@ -228,6 +229,32 @@ h2 {
   font-weight: 700;
   line-height: 1;
 }
+
+.header{
+  text-align: center;
+  margin-bottom: -20px; /* Spazio sotto l'intestazione */
+  justify-content: center;
+  align-items: center;
+}
+
+.logo{
+  left: 50%;
+  transform: translateX(-50%);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px; /* Spazio sotto il logo */
+  width: 80px;
+}
+
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5em; /* Dimensione del titolo principale */
+  color: #a25a3e; /* Colore caldo per il titolo */
+  margin: 0; /* Rimuove margini predefiniti */
+}
+
 
 /* Responsive adjustments - improved mobile layout */
 @media (max-width: 768px) {
@@ -360,8 +387,8 @@ h2 {
 
 /* Nuovo colore verde più soft per i punteggi del perdente complessivo */
 .score-set.score-loser-overall {
-  background-color: #d4edda; /* Un verde chiaro e soft */
-  color: #28a745; /* Testo verde più scuro per il contrasto */
+  background-color: #b7e3c2; /* Un verde chiaro e soft */
+  color: #125321; /* Testo verde più scuro per il contrasto */
   border-color: #c3e6cb;
 }
 
