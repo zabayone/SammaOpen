@@ -83,9 +83,9 @@ function switchTab(tab) {
 function renderLeaderboard() {
   const leaderboard = document.getElementById('leaderboard');
   const sorted = Object.entries(data[currentTab])
-    .filter(([name]) => name !== "Ospite") // Esclude Ospite dalla classifica
+    .filter(([name, player]) => name !== "Ospite" && player.matches && player.matches.length > 0) // <-- aggiungi questo filtro
     .sort((a, b) => b[1].elo - a[1].elo);
-  
+
   if (!leaderboard) return;
   leaderboard.innerHTML = `
     <table>
