@@ -12,20 +12,32 @@ body {
   padding: 1rem;
 }
 
+.match-box.match-win {
+  border: 1.7px solid #2ecc40; /* verde */
+}
+.match-box.match-lose {
+  border: 1.7px solid #e36f10; /* rosso */
+}
+
+.match-list{
+    max-height: 250px;
+    overflow-y: auto;
+  }
+
 h3 {
   font-size: 1.8rem;
   margin-bottom: 1rem;
   color: #4d362d;
-  border-bottom: 3px solid #c65c3c;
+  border-bottom: 3px solid #f7931e;
 
 }
 
 h2 {
   font-size: 1.6rem;
-  margin-top: 2rem;
+  margin-top: 0.5rem;
   margin-bottom: 1rem;
   color: #4d362d;
-  border-left: 4px solid #c65c3c;
+  border-left: 4px solid #f7931e;
   padding-left: 0.5rem;
 }
 
@@ -88,7 +100,7 @@ h2 {
 .player-name {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #333;
+  color: #dc872d;
   flex: 1;
   line-height: 1.3;
 }
@@ -128,12 +140,6 @@ h2 {
   line-height: 1;
 }
 
-/* Modifica il colore del testo per il vincitore a un arancione più scuro per coerenza */
-.player-name.winner {
-  color: #ff6b35; /* Un arancione più scuro che si abbini al tema */
-  font-weight: 700;
-}
-
 
 /* Nuova classe per la linea divisoria che copre anche i punteggi */
 .set-score-divider {
@@ -149,16 +155,16 @@ h2 {
 
 /* Colore arancione per i punteggi del vincitore complessivo */
 .score-set.score-winner-overall {
-  background-color: #ff6b35; /* Arancione dalla palette esistente */
+  background-color: #93b893; /* Arancione dalla palette esistente */
   color: white;
-  border-color: #e55a2b;
+  border-color: #2b712b;
 }
 
 /* Nuovo colore verde più soft per i punteggi del perdente complessivo */
 .score-set.score-loser-overall {
-  background-color: #d4edda; /* Un verde chiaro e soft */
-  color: #28a745; /* Testo verde più scuro per il contrasto */
-  border-color: #c3e6cb;
+  background-color: #f5a957; /* Un verde chiaro e soft */
+  color: #ffffff; /* Testo verde più scuro per il contrasto */
+  border-color: #af6300;
 }
 
 .score-set.winner-set {
@@ -230,31 +236,50 @@ h2 {
   line-height: 1;
 }
 
-.header{
-  text-align: center;
-  margin-bottom: -20px; /* Spazio sotto l'intestazione */
-  justify-content: center;
+.header {
+  display: flex;
   align-items: center;
-}
-
-.logo{
+  gap: 18px;
+  margin-bottom: 24px;
+  justify-content: center;
   left: 50%;
+  width: 90%;
   transform: translateX(-50%);
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px; /* Spazio sotto il logo */
+  padding-bottom: 20px;
+  background: #f7f4ed; /* Sfondo bianco */
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  margin-top: 10px;
+  bottom: 0;
+  height: 3.5px;
+  width: 100%;
+  background: linear-gradient(to right, #f7931e, #109820);
+  pointer-events: none;
+}
+
+.logo {
   width: 80px;
+  margin-top: 25px;
+  height: auto;
+  margin-bottom: 10px;
+  position: static;
+  transform: none;
+  display: block;
 }
 
-h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5em; /* Dimensione del titolo principale */
-  color: #a25a3e; /* Colore caldo per il titolo */
-  margin: 0; /* Rimuove margini predefiniti */
+#player-name {
+  font-size: 1.8rem;
+  margin-bottom: 0;
+  color: #4d362d;
+  border-bottom: none;
+  margin-bottom: 10px;
+  font-weight: 700;
 }
-
 
 /* Responsive adjustments - improved mobile layout */
 @media (max-width: 768px) {
@@ -362,13 +387,6 @@ h1 {
     max-width: 100px;
 }
 
-/* Modifica il colore del testo per il vincitore a un arancione più scuro per coerenza */
-.player-name.winner {
-  color: #ff6b35; /* Un arancione più scuro che si abbini al tema */
-  font-weight: 700;
-}
-
-
 /* Nuova classe per la linea divisoria che copre anche i punteggi */
 .score-divider {
   border: none;
@@ -377,30 +395,4 @@ h1 {
   /* Assicurati che si estenda per tutta la larghezza del match-box */
   width: 100%;
 }
-
-/* Colore arancione per i punteggi del vincitore complessivo */
-.score-set.score-winner-overall {
-  background-color: #ff6b35; /* Arancione dalla palette esistente */
-  color: white;
-  border-color: #e55a2b;
-}
-
-/* Nuovo colore verde più soft per i punteggi del perdente complessivo */
-.score-set.score-loser-overall {
-  background-color: #b7e3c2; /* Un verde chiaro e soft */
-  color: #125321; /* Testo verde più scuro per il contrasto */
-  border-color: #c3e6cb;
-}
-
-/* Rimuovi o modifica lo stile di .score-set.winner-set se non vuoi che influisca
-   più sul colore di sfondo, dato che ora usiamo .score-winner-overall/.score-loser-overall */
-.score-set.winner-set {
-  /* Questo stile non è più strettamente necessario per il colore di sfondo,
-     ma puoi usarlo per aggiungere un bordo o altri effetti se desideri
-     segnalare chi ha vinto un set specifico, indipendentemente dal match.
-     Per ora, lo commento per evitare conflitti di colore. */
-  /* background-color: #ff6b35; */
-  /* color: white; */
-  /* border-color: #e55a2b; */
-  /* font-weight: 700; */
 }

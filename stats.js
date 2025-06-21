@@ -77,7 +77,7 @@ async function loadPlayerData() {
     containerSingles.parentNode.insertBefore(singlesStatsSection, containerSingles);
 
     if (numMatches > 0) {
-      data.matches?.slice(-5).reverse().forEach(match => {
+      data.matches?.reverse().forEach(match => {
         const matchElement = createMatchBox(match);
         containerSingles.appendChild(matchElement);
       });
@@ -121,7 +121,7 @@ async function loadPlayerData() {
     containerDoubles.parentNode.insertBefore(doublesStatsSection, containerDoubles);
 
     if (numMatches > 0) {
-      data.matches?.slice(-5).reverse().forEach(match => {
+      data.matches?.reverse().forEach(match => {
         const matchElement = createMatchBox(match);
         containerDoubles.appendChild(matchElement);
       });
@@ -133,27 +133,78 @@ async function loadPlayerData() {
   }
 }
 
+function normalizeTeamName(team) {
+  if (!team) return "";
+  return team
+    .replace(/^Squadra vincente:/i, "") // Rimuove "Squadra vincente:" se presente
+    .replace(/sono/i, "") // Rimuove "sono" se presente
+    .replace(/[’']/g, "") // Rimuove apostrofi
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Rimuove accenti
+    .replace(/^\s*|\s*$/g, "") // Trim
+    .split("&")
+    .map(n => n.trim().toLowerCase())
+    .sort()
+    .join("&");
+}
+
 function createMatchBox(matchString) {
-  const [teamsPart, rest] = matchString.split(" vs ");
-  if (!rest) return document.createTextNode(matchString);
+  // Regex per match doppi e singoli: "Team1 vs Team2: punteggi → vincitore"
+  const match = matchString.match(/^(.*?) vs (.*?): (.*?)(?: → (.*))?$/);
+  if (!match) return document.createTextNode(matchString);
 
-  const [team2Part, scoreAndWin] = rest.split(": ");
-  if (!scoreAndWin) return document.createTextNode(matchString);
+  const team1Full = match[1].trim();
+  const team2Full = match[2].trim();
+  const team1Abbr = team1Full.split(" & ").map(name => abbreviaNome(name.trim())).join(" & ");
+  const team2Abbr = team2Full.split(" & ").map(name => abbreviaNome(name.trim())).join(" & ");
+  const setsStrRaw = match[3].trim();
+  let winner = match[4] ? match[4].trim() : "";
 
-  const team1Names = teamsPart.split(" & ").map(name => abbreviaNome(name.trim()));
-  const team2Names = team2Part.split(" & ").map(name => abbreviaNome(name.trim()));
+  // Parsing robusto per "vince" e "Squadra vincente"
+  if (winner) {
+    if (winner.endsWith(" vince")) winner = winner.replace(/ vince$/i, "").trim();
+    if (winner.toLowerCase().startsWith("squadra vincente")) {
+      const m = winner.match(/^Squadra vincente:?\s*(.+?)(?:\s*sono)?$/i);
+      if (m && m[1]) {
+        winner = m[1].trim();
+      } else {
+        winner = winner.replace(/^Squadra vincente:?/i, "").replace(/sono/i, "").trim();
+      }
+    }
+  }
 
-  const team1 = team1Names.join(" & ");
-  const team2 = team2Names.join(" & ");
+  // Normalizza per confronto robusto
+  const normTeam1 = normalizeTeamName(team1Full);
+  const normTeam2 = normalizeTeamName(team2Full);
+  const normWinner = normalizeTeamName(winner);
 
-  const [setsStrRaw, winStr] = scoreAndWin.split(" → ");
-  const winner = winStr?.trim();
+  const team1IsWinner = normTeam1 === normWinner;
+  const team2IsWinner = normTeam2 === normWinner;
 
-  // Rimuovo eventuali virgole dai set (es: "6-3, 4-6" → "6-3 4-6")
+  // Log per debug
+  if (team1IsWinner) {
+    console.log("Vincitore:", team1Full, "| Perdente:", team2Full);
+  } else if (team2IsWinner) {
+    console.log("Vincitore:", team2Full, "| Perdente:", team1Full);
+  } else {
+    console.log("Nessun vincitore rilevato per:", matchString, "| winner:", winner, "| team1:", team1Full, "| team2:", team2Full);
+  }
+
+  // Rimuovo eventuali virgole dai set
   const setsStr = setsStrRaw.replace(/,/g, "").trim();
 
   const box = document.createElement("div");
   box.className = "match-box";
+
+  // Determina se il player è nel team1 o team2
+  const playerInTeam1 = team1Full.split("&").map(n => n.trim()).includes(playerName);
+  const playerInTeam2 = team2Full.split("&").map(n => n.trim()).includes(playerName);
+
+  // Applica la classe in base al risultato
+  if ((playerInTeam1 && team1IsWinner) || (playerInTeam2 && team2IsWinner)) {
+    box.classList.add("match-win");
+  } else if ((playerInTeam1 && team2IsWinner) || (playerInTeam2 && team1IsWinner)) {
+    box.classList.add("match-lose");
+  }
 
   // Main match content container
   const matchContent = document.createElement("div");
@@ -164,25 +215,25 @@ function createMatchBox(matchString) {
   playersSection.className = "players-section";
 
   // Determine who is the winner and loser of the overall match
-  const team1IsWinner = team1 === winner;
-  const team2IsWinner = team2 === winner;
+  const team1IsWinnerOverall = team1IsWinner;
+  const team2IsWinnerOverall = team2IsWinner;
 
   // Create player rows for Team 1
   const playerRow1 = document.createElement("div");
   playerRow1.className = "player-row";
   const playerInitial1 = document.createElement("div");
   playerInitial1.className = "player-initial";
-  playerInitial1.style.backgroundColor = getPlayerColor(team1);
-  if (team1.includes(" & ")) {
-    const players = team1.split(" & ");
+  playerInitial1.style.backgroundColor = getPlayerColor(team1Full);
+  if (team1Full.includes(" & ")) {
+    const players = team1Full.split(" & ");
     playerInitial1.textContent = players.map(p => getInitial(p)).join("");
     playerInitial1.style.fontSize = "0.7rem";
   } else {
-    playerInitial1.textContent = getInitial(team1);
+    playerInitial1.textContent = getInitial(team1Full);
   }
   const playerName1 = document.createElement("div");
-  playerName1.className = `player-name ${team1IsWinner ? "winner" : ""}`;
-  playerName1.textContent = team1;
+  playerName1.className = `player-name ${team1IsWinnerOverall ? "winner" : ""}`;
+  playerName1.textContent = team1Abbr;
   playerRow1.appendChild(playerInitial1);
   playerRow1.appendChild(playerName1);
   playersSection.appendChild(playerRow1);
@@ -192,17 +243,17 @@ function createMatchBox(matchString) {
   playerRow2.className = "player-row";
   const playerInitial2 = document.createElement("div");
   playerInitial2.className = "player-initial";
-  playerInitial2.style.backgroundColor = getPlayerColor(team2);
-  if (team2.includes(" & ")) {
-    const players = team2.split(" & ");
+  playerInitial2.style.backgroundColor = getPlayerColor(team2Full);
+  if (team2Full.includes(" & ")) {
+    const players = team2Full.split(" & ");
     playerInitial2.textContent = players.map(p => getInitial(p)).join("");
     playerInitial2.style.fontSize = "0.7rem";
   } else {
-    playerInitial2.textContent = getInitial(team2);
+    playerInitial2.textContent = getInitial(team2Full);
   }
   const playerName2 = document.createElement("div");
-  playerName2.className = `player-name ${team2IsWinner ? "winner" : ""}`;
-  playerName2.textContent = team2;
+  playerName2.className = `player-name ${team2IsWinnerOverall ? "winner" : ""}`;
+  playerName2.textContent = team2Abbr;
   playerRow2.appendChild(playerInitial2);
   playerRow2.appendChild(playerName2);
   playersSection.appendChild(playerRow2);
@@ -211,35 +262,34 @@ function createMatchBox(matchString) {
   const scoresSection = document.createElement("div");
   scoresSection.className = "scores-section";
 
-  const sets = setsStr.split(" ");
+  const sets = setsStr.split(" ").filter(s => s.includes("-"));
   sets.forEach(setScore => {
     const setScores = document.createElement("div");
     setScores.className = "set-scores";
-
     const [scoreA, scoreB] = setScore.split("-").map(Number);
 
     // Score for Team 1
     const scoreDiv1 = document.createElement("div");
     scoreDiv1.className = "score-set";
     if (team1IsWinner) {
-      scoreDiv1.classList.add("score-winner-overall"); // Arancione per il vincitore
+      scoreDiv1.classList.add("score-winner-overall");
     } else {
-      scoreDiv1.classList.add("score-loser-overall"); // Verde chiaro per il perdente
+      scoreDiv1.classList.add("score-loser-overall");
     }
     scoreDiv1.textContent = scoreA;
     setScores.appendChild(scoreDiv1);
 
     const setScoreDivider = document.createElement("hr");
-    setScoreDivider.className = "set-score-divider"; // Nuova classe per la linea tra i punteggi del set
+    setScoreDivider.className = "set-score-divider";
     setScores.appendChild(setScoreDivider);
 
     // Score for Team 2
     const scoreDiv2 = document.createElement("div");
     scoreDiv2.className = "score-set";
     if (team2IsWinner) {
-      scoreDiv2.classList.add("score-winner-overall"); // Arancione per il vincitore
+      scoreDiv2.classList.add("score-winner-overall");
     } else {
-      scoreDiv2.classList.add("score-loser-overall"); // Verde chiaro per il perdente
+      scoreDiv2.classList.add("score-loser-overall");
     }
     scoreDiv2.textContent = scoreB;
     setScores.appendChild(scoreDiv2);
