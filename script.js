@@ -82,23 +82,31 @@ function switchTab(tab) {
 
 function renderLeaderboard() {
   const leaderboard = document.getElementById('leaderboard');
-  const sorted = Object.entries(data[currentTab])
-    .filter(([name, player]) => name !== "Ospite" && player.matches && player.matches.length > 0) // <-- aggiungi questo filtro
-    .sort((a, b) => b[1].elo - a[1].elo);
+  // Calcola eloShown per ogni giocatore
+  const playersArr = Object.entries(data[currentTab])
+    .filter(([name, player]) => name !== "Ospite" && player.matches && player.matches.length > 0)
+    .map(([name, player]) => {
+      const numMatches = player.matches ? player.matches.length : 0;
+      const reliability = Math.min(1, numMatches / 8);
+      // Valore medio di partenza 120
+      const eloShown = Math.round(player.elo * reliability + 120 * (1 - reliability));
+      return { name, player, eloShown };
+    })
+    .sort((a, b) => b.eloShown - a.eloShown); // Ordina per eloShown
 
   if (!leaderboard) return;
   leaderboard.innerHTML = `
     <table>
       <tr><th>#</th><th>Nome</th><th>ELO</th><th>W</th><th>L</th></tr>
-      ${sorted.map(([name, player], i) => {
-        const abbreviatedName = abbreviaNome(name);
-        const wins = player.wins || 0;
-        const losses = player.losses || 0;
+      ${playersArr.map((entry, i) => {
+        const abbreviatedName = abbreviaNome(entry.name);
+        const wins = entry.player.wins || 0;
+        const losses = entry.player.losses || 0;
         return `
-          <tr onclick="window.location='stats.html?name=${encodeURIComponent(name)}'">
+          <tr onclick="window.location='stats.html?name=${encodeURIComponent(entry.name)}'">
             <td><span class="rank-number">${i + 1}</span></td>
             <td>${abbreviatedName}</td>
-            <td>${player.elo}</td>
+            <td>${entry.eloShown}</td>
             <td>${wins}</td>
             <td>${losses}</td>
           </tr>`;
@@ -191,14 +199,14 @@ async function realAddResult() {
 
       const winner = p1Wins > p2Wins ? p1 : p2;
       const loser = p1Wins > p2Wins ? p2 : p1;
-      const K = 32;
-      const winElo = data.singles[winner].elo;
-      const loseElo = data.singles[loser].elo;
+      const K = 40;
+      const winElo = data.singles[winner].elo * 10;
+      const loseElo = data.singles[loser].elo * 10;
       const expectedWin = 1 / (1 + Math.pow(10, (loseElo - winElo) / 400));
       const expectedLose = 1 - expectedWin;
 
-      data.singles[winner].elo = Math.round(winElo + K * (1 - expectedWin));
-      data.singles[loser].elo = Math.round(loseElo + K * (0 - expectedLose));
+      data.singles[winner].elo = Math.round((winElo + K * (1 - expectedWin)) / 10);
+      data.singles[loser].elo = Math.round((loseElo + K * (0 - expectedLose)) / 10);
 
       const res = `${p1} vs ${p2}: ${summary.join(', ')} → ${winner} vince`;
       data.singles[p1].matches.push(res);
@@ -253,10 +261,10 @@ async function realAddResult() {
 
       const winnerTeam = team1Wins > team2Wins ? team1 : team2;
       const loserTeam = team1Wins > team2Wins ? team2 : team1;
-      const K = 32;
+      const K = 80;
 
-      const winnerElo = (data.doubles[winnerTeam[0]].elo + data.doubles[winnerTeam[1]].elo) / 2;
-      const loserElo = (data.doubles[loserTeam[0]].elo + data.doubles[loserTeam[1]].elo) / 2;
+      const winnerElo = ((data.doubles[winnerTeam[0]].elo * 10) + (data.doubles[winnerTeam[1]].elo * 10)) / 2;
+      const loserElo = ((data.doubles[loserTeam[0]].elo * 10) + (data.doubles[loserTeam[1]].elo * 10)) / 2;
       const expectedWin = 1 / (1 + Math.pow(10, (loserElo - winnerElo) / 400));
       const expectedLose = 1 - expectedWin;
 
@@ -264,10 +272,10 @@ async function realAddResult() {
       const eloChangeLoser = K * (0 - expectedLose);
 
       winnerTeam.forEach(p => {
-        data.doubles[p].elo = Math.round(data.doubles[p].elo + eloChangeWinner / 2);
+        data.doubles[p].elo = Math.round((data.doubles[p].elo * 10 + eloChangeWinner / 2) / 10);
       });
       loserTeam.forEach(p => {
-        data.doubles[p].elo = Math.round(data.doubles[p].elo + eloChangeLoser / 2);
+        data.doubles[p].elo = Math.round((data.doubles[p].elo * 10 + eloChangeLoser / 2) / 10);
       });
 
       const res = `${p1} & ${p2} vs ${p3} & ${p4}: ${summary.join(', ')} → Squadra vincente: ${winnerTeam.join(' & ')}`;
