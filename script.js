@@ -3,7 +3,7 @@ import { checkPasskey } from './server.js';
 
 const players = [
   "Nicola Nespoli", "Mattia Casulli", "Andrea Redaelli", "Giacomo Belli",
-  "Christian Joli", "Giacomo Meazzi", "Davide Saccani", "Margherita Dassisti",
+  "Christian Joli", "Giacomo Meazzi", "Davide Saccani", "Margherita Dassisti", "Riccardo Savarè",
   "Ospite" // Giocatore fittizio per partite con esterni
 ];
 
@@ -13,12 +13,24 @@ let data = {
 };
 let currentTab = 'singles';
 
+function ensureLastMatchDate() {
+  const today = new Date().toISOString().slice(0, 10);
+  ['singles', 'doubles'].forEach(tab => {
+    Object.values(data[tab]).forEach(player => {
+      if (!player.lastMatchDate) {
+        player.lastMatchDate = today;
+      }
+    });
+  });
+}
+
 async function init() {
   data = await loadLeaderboardData(players);
   
   // Aggiungi il giocatore Ospite se non esiste già
   addGuestPlayer();
-  
+  ensureLastMatchDate();
+  applyInactivityDecay();
   populateSelects();
   renderLeaderboard();
   setupEventListeners();
@@ -87,7 +99,7 @@ function renderLeaderboard() {
     .filter(([name, player]) => name !== "Ospite" && player.matches && player.matches.length > 0)
     .map(([name, player]) => {
       const numMatches = player.matches ? player.matches.length : 0;
-      const reliability = Math.min(1, numMatches / 8);
+      const reliability = Math.min(1, numMatches / 10);
       // Valore medio di partenza 120
       const eloShown = Math.round(player.elo * reliability + 120 * (1 - reliability));
       return { name, player, eloShown };
@@ -105,7 +117,10 @@ function renderLeaderboard() {
         return `
           <tr onclick="window.location='stats.html?name=${encodeURIComponent(entry.name)}'">
             <td><span class="rank-number">${i + 1}</span></td>
-            <td>${abbreviatedName}</td>
+            <td>
+              ${abbreviatedName}
+              ${entry.player.inactive ? '<span class="inactive-tag">INATTIVO</span>' : ''}
+            </td>
             <td>${entry.eloShown}</td>
             <td>${wins}</td>
             <td>${losses}</td>
@@ -213,12 +228,15 @@ async function realAddResult() {
       data.singles[p2].matches.push(res);
       data.singles[winner].wins++;
       data.singles[loser].losses++;
+      const today = new Date().toISOString().slice(0, 10);
+      data.singles[p1].lastMatchDate = today;
+      data.singles[p2].lastMatchDate = today;
 
       // Salva solo i giocatori reali (non Ospite) nel database
       const playersToSave = {};
       if (p1 !== "Ospite") playersToSave[p1] = data.singles[p1];
       if (p2 !== "Ospite") playersToSave[p2] = data.singles[p2];
-      
+
       if (Object.keys(playersToSave).length > 0) {
         await saveMatchResult('singles', playersToSave);
       }
@@ -283,6 +301,10 @@ async function realAddResult() {
       loserTeam.forEach(p => data.doubles[p].matches.push(res));
       winnerTeam.forEach(p => data.doubles[p].wins++);
       loserTeam.forEach(p => data.doubles[p].losses++);
+      const today = new Date().toISOString().slice(0, 10);
+      [...winnerTeam, ...loserTeam].forEach(p => {
+        data.doubles[p].lastMatchDate = today;
+      });
 
       // Salva solo i giocatori reali (non Ospite) nel database
       const playersToSave = {};
@@ -350,5 +372,24 @@ document.querySelectorAll('input[name="matchType"]').forEach(input => {
 
 // Chiamata iniziale per posizionare bene il vs
 updateVsPosition();
+
+function applyInactivityDecay() {
+  const now = new Date();
+  ['singles', 'doubles'].forEach(tab => {
+    Object.values(data[tab]).forEach(player => {
+      player.inactive = false; // reset
+      if (!player.lastMatchDate) return;
+      const lastDate = new Date(player.lastMatchDate);
+      const months = (now.getFullYear() - lastDate.getFullYear()) * 12 + (now.getMonth() - lastDate.getMonth());
+      const decay = Math.floor(months / 2); // 1 punto ogni 2 mesi
+      if (decay > 0) {
+        player.elo = Math.max(0, player.elo - decay);
+      }
+      if (months >= 2) {
+        player.inactive = true;
+      }
+    });
+  });
+}
 
 init();

@@ -30,13 +30,17 @@ export async function loadLeaderboardData(players) {
   for (const name of players) {
     for (const tab of ['singles', 'doubles']) {
       if (!data[tab][name]) {
-        data[tab][name] = { elo: 1200, matches: [] };
+        data[tab][name] = { elo: 120, matches: [], wins: 0, losses: 0, lastMatchDate: null };
         await setDoc(doc(db, tab, name), data[tab][name]);
       } else {
         if (data[tab][name].elo === undefined) data[tab][name].elo = 1200;
         if (!Array.isArray(data[tab][name].matches)) data[tab][name].matches = [];
         if (data[tab][name].wins === undefined) data[tab][name].wins = 0;
-        if (data[tab][name].losses === undefined) data[tab][name].losses = 0; 
+        if (data[tab][name].losses === undefined) data[tab][name].losses = 0;
+        if (data[tab][name].lastMatchDate === undefined) {
+          data[tab][name].lastMatchDate = null;
+          await setDoc(doc(db, tab, name), data[tab][name], { merge: true });
+        }
       }
     }
   }
@@ -60,7 +64,6 @@ export async function checkPasskey(userInput) {
 
 // Funzione che aggiorna elo e match in Firestore per singoli o doppi
 export async function saveMatchResult(currentTab, updatedPlayersData) {
-  // updatedPlayersData è un oggetto { playerName: { elo, matches }, ... }
   try {
     const updates = [];
     for (const [playerName, playerData] of Object.entries(updatedPlayersData)) {
@@ -69,7 +72,8 @@ export async function saveMatchResult(currentTab, updatedPlayersData) {
         elo: playerData.elo,
         matches: playerData.matches,
         wins: playerData.wins || 0,
-        losses: playerData.losses || 0
+        losses: playerData.losses || 0,
+        lastMatchDate: playerData.lastMatchDate || null
       }));
     }
     await Promise.all(updates);
