@@ -94,17 +94,33 @@ function switchTab(tab) {
 
 function renderLeaderboard() {
   const leaderboard = document.getElementById('leaderboard');
-  // Calcola eloShown per ogni giocatore
-  const playersArr = Object.entries(data[currentTab])
+  let playersArr = Object.entries(data[currentTab])
     .filter(([name, player]) => name !== "Ospite" && player.matches && player.matches.length > 0)
     .map(([name, player]) => {
-      const numMatches = player.matches ? player.matches.length : 0;
-      const reliability = Math.min(1, numMatches / 10);
-      // Valore medio di partenza 120
-      const eloShown = Math.round(player.elo * reliability + 120 * (1 - reliability));
+      let eloShown = player.elo;
+      if (currentTab === 'singles') {
+        const numMatches = player.matches ? player.matches.length : 0;
+        const reliability = Math.min(1, numMatches / 10);
+        eloShown = Math.round(player.elo * reliability + 120 * (1 - reliability));
+      }
       return { name, player, eloShown };
     })
-    .sort((a, b) => b.eloShown - a.eloShown); // Ordina per eloShown
+    .sort((a, b) => {
+      // Prima ordina per eloShown
+      if (b.eloShown !== a.eloShown) {
+        return b.eloShown - a.eloShown;
+      }
+      // Poi ordina per elo naturale
+      if (b.player.elo !== a.player.elo) {
+        return b.player.elo - a.player.elo;
+      }
+      // Poi ordina per inattività: attivi sopra inattivi
+      if (!!a.player.inactive !== !!b.player.inactive) {
+        return a.player.inactive ? 1 : -1;
+      }
+      // Se ancora pari, ordina alfabeticamente
+      return a.name.localeCompare(b.name);
+    });
 
   if (!leaderboard) return;
   leaderboard.innerHTML = `
@@ -373,6 +389,13 @@ document.querySelectorAll('input[name="matchType"]').forEach(input => {
 // Chiamata iniziale per posizionare bene il vs
 updateVsPosition();
 
+/*
+  Consigli:
+  - Il "buff" di inattività (decadimento ELO) dovrebbe essere moderato: 1 punto ogni 2 mesi è ok, ma puoi aumentare a 2-3 punti ogni 2 mesi se vuoi che l'inattività pesi di più.
+  - È meglio applicare il decadimento solo nel frontend: così il database mantiene il vero ELO, e il giocatore riottiene i punti appena torna attivo.
+  - Il tag "INATTIVO" va mostrato solo se il giocatore non gioca da almeno 2 mesi.
+*/
+
 function applyInactivityDecay() {
   const now = new Date();
   ['singles', 'doubles'].forEach(tab => {
@@ -381,11 +404,11 @@ function applyInactivityDecay() {
       if (!player.lastMatchDate) return;
       const lastDate = new Date(player.lastMatchDate);
       const months = (now.getFullYear() - lastDate.getFullYear()) * 12 + (now.getMonth() - lastDate.getMonth());
-      const decay = Math.floor(months / 2); // 1 punto ogni 2 mesi
+      const decay = 0.5 * months; // 0.5 punti per mese
       if (decay > 0) {
         player.elo = Math.max(0, player.elo - decay);
       }
-      if (months >= 2) {
+      if (months >= 1.5) {
         player.inactive = true;
       }
     });
