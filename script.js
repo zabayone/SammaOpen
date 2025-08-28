@@ -405,10 +405,8 @@ function applyInactivityDecay() {
       const lastDate = new Date(player.lastMatchDate);
       const months = (now.getFullYear() - lastDate.getFullYear()) * 12 + (now.getMonth() - lastDate.getMonth());
       const decay = 0.5 * months; // 0.5 punti per mese
-      if (decay > 0) {
+      if (decay > 1) {
         player.elo = Math.max(0, player.elo - decay);
-      }
-      if (months >= 1.5) {
         player.inactive = true;
       }
     });
