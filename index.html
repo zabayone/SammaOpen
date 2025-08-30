@@ -7,81 +7,61 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="styles.css" />
   <script type="module" src="script.js"></script>
+  <script type="module" src="migration.js"></script>
 </head>
 <body>
-    <div class="header">
-        <img class="logo" src="logo.png"/>
-        <h1>Lüdesan Garros</h1>
-    </div>
-    <div class="container" id="mainContainer">
-        <div class="tab-switch">
-            <input type="radio" id="singles" name="tab" checked>
-            <label for="singles" id="tab-singles">Singolo</label>
-            <input type="radio" id="doubles" name="tab">
-            <label for="doubles" id="tab-doubles">Doppio</label>
-            <div class="slider"></div>
-        </div>
-        <div id="tableWrapper">
-            <div id="leaderboard"></div>
-        </div>
-        <div class="add-result">
-            <h3>Aggiungi Risultato</h3>
-        </div>
-       <div class="match-form">
-            <div class="team" id="team1">
-                <select id="player1">
-                    <option value="" disabled selected>Seleziona un giocatore</option>
-                </select>
-                
-                <div class="vs">VS</div>
-                <select id="player2">
-                    <option value="" disabled selected>Seleziona un giocatore</option>
-                </select>
-            </div>
-
-            <div class="team" id="team2" style="display: none;">
-                <select id="player3">
-                    <option value="" disabled selected>Seleziona un giocatore</option>
-                </select>
-                <select id="player4">
-                    <option value="" disabled selected>Seleziona un giocatore</option>
-                </select>
-            </div>
-
-            <input type="text" id="setResults" placeholder="Es. 6-4, 3-6, 10-8">
-            <button id="addResultButton">Conferma</button>
-        </div>
-
-    </div>
-
-    <div class="container player-page" id="playerPage" style="display:none;">
-        <button onclick="closePlayerPage()">Indietro</button>
-        <h2 id="playerName"></h2>
-        <p>ELO: <span id="playerElo"></span></p>
-        <h3>Ultime 5 Partite</h3>
-        <ul id="playerMatches"></ul>
-    </div>
-
-    <script>
-        // Funzione per chiudere la pagina giocatore
-        function closePlayerPage() {
-        document.getElementById('playerPage').style.display = 'none';
-        document.getElementById('mainContainer').style.display = 'block';
-        }
-    </script>
-    <div id="passkeyModal" class="modal-overlay">
-        <div class="modal">
-            <h2>Inserisci Passkey</h2>
-            <input type="password" id="passkeyInput" placeholder="Passkey">
-                <div class="button-group">
-                    <button id="confirmPasskey">Conferma</button>
-                    <button id="cancelPasskey" class="cancel-btn">Annulla</button>
-                </div>
-        </div>
-</div>
-
+  <div class="header">
+    <img class="logo" src="logo.png" alt="logo"/>
+    <h1>Lüdesan Garros</h1>
   </div>
-</div>
 
+  <div class="container" id="mainContainer">
+    <div class="tab-switch">
+      <input type="radio" id="singles" name="tab" checked>
+      <label for="singles" id="tab-singles" class="tab">Singolo</label>
+      <input type="radio" id="doubles" name="tab">
+      <label for="doubles" id="tab-doubles" class="tab">Doppio</label>
+      <div class="slider"></div>
+    </div>
+
+    <div id="tableWrapper"><div id="leaderboard"></div></div>
+
+    <div class="add-result"><h3>Aggiungi Risultato</h3></div>
+
+    <div class="match-form">
+      <div class="team" id="team1">
+        <select id="player1"><option value="" disabled selected>Seleziona un giocatore</option></select>
+        <div class="vs">VS</div>
+        <select id="player2"><option value="" disabled selected>Seleziona un giocatore</option></select>
+      </div>
+
+      <div class="team" id="team2" style="display:none;">
+        <select id="player3"><option value="" disabled selected>Seleziona un giocatore</option></select>
+        <select id="player4"><option value="" disabled selected>Seleziona un giocatore</option></select>
+      </div>
+
+      <input id="sets" type="text" placeholder="Punteggi set es. 6-4 3-6 10-8">
+      <select id="surface">
+        <option value="">Superficie (facoltativa)</option>
+        <option value="Terra">Terra</option>
+        <option value="Cemento">Cemento</option>
+        <option value="Erba">Erba</option>
+      </select>
+      <button id="addResultButton">Salva risultato</button>
+    </div>
+  </div>
+
+  <div id="passkeyModal" class="modal-overlay" style="display:none;">
+    <div class="modal">
+      <h2>Inserisci Passkey</h2>
+      <form id="passkeyForm" onsubmit="return false;">
+        <input type="password" id="passkeyInput" placeholder="Passkey">
+        <div class="button-group">
+          <button id="confirmPasskey" type="submit">Conferma</button>
+          <button id="cancelPasskey" class="cancel-btn" type="button">Annulla</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </body>
 </html>

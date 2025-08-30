@@ -1,28 +1,45 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Statistiche Giocatore</title>
-  <link rel="stylesheet" href="stats.css" />
+  <link rel="stylesheet" href="stats.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="stats.js"></script>
 </head>
 <body>
   <div class="header">
-  <a href="index.html">
-    <img class="logo" src="logo.png"/>
-  </a>
-  <h3 id="player-name"></h3>
+    <a href="index.html" id="logo-link" aria-label="Home">
+        <img src="logo.png" alt="Lüdesan Garros Lodi" class="logo" />
+    </a>
+    <h1 id="player-name">Statistiche</h1>
   </div>
 
   <div class="stats-container">
-
-    <h2>Archivio incontri - Singolo</h2>
+    <h2>Andamento ELO</h2>
+    <div class="chart-wrapper">
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <canvas id="eloChart"></canvas>
+    </div>
+    <div class="stats-section" id="player-cards">
+  <div class="stats-card">
+    <div class="stats-label">ELO Singolo</div>
+    <div class="stats-value" id="elo-singles">—</div>
+  </div>
+  <div class="stats-card">
+    <div class="stats-label">ELO Doppio</div>
+    <div class="stats-value" id="elo-doubles">—</div>
+  </div>
+  <div class="stats-card">
+    <div class="stats-label">Streak</div>
+    <div class="stats-value" id="streak-singles">0</div>
+  </div>
+</div>
+    <h3>Partite Singolo</h3>
     <div id="matchlist-singles" class="match-list"></div>
-
-    <h2>Archivio incontri - Doppio</h2>
+    <h3>Partite Doppio</h3>
     <div id="matchlist-doubles" class="match-list"></div>
   </div>
-
-  <script type="module" src="stats.js"></script>
 </body>
 </html>

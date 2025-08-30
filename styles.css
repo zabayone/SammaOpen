@@ -228,13 +228,13 @@ button:hover {
 }
 
 /* Colori per i primi 3 posti come nel secondo esempio */
-#leaderboard tr:nth-child(2) td:first-child::before {
+#leaderboard tr:nth-child(1) td:first-child::before {
   background: gold;
 } /* Oro */
-#leaderboard tr:nth-child(3) td:first-child::before {
+#leaderboard tr:nth-child(2) td:first-child::before {
   background: silver;
 } /* Argento */
-#leaderboard tr:nth-child(4) td:first-child::before {
+#leaderboard tr:nth-child(3) td:first-child::before {
   background: #cd7f32;
 } /* Bronzo */
 

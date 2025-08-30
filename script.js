@@ -1,416 +1,160 @@
-import { loadLeaderboardData, saveMatchResult } from './server.js';
-import { checkPasskey } from './server.js';
+import { loadLeaderboardData, saveMatchResult, checkPasskey } from './server.js';
 
-const players = [
-  "Nicola Nespoli", "Mattia Casulli", "Andrea Redaelli", "Giacomo Belli",
-  "Christian Joli", "Giacomo Meazzi", "Davide Saccani", "Margherita Dassisti", "Riccardo Savarè",
-  "Ospite" // Giocatore fittizio per partite con esterni
-];
-
-let data = {
-  singles: {},
-  doubles: {}
-};
-let currentTab = 'singles';
-
-function ensureLastMatchDate() {
-  const today = new Date().toISOString().slice(0, 10);
-  ['singles', 'doubles'].forEach(tab => {
-    Object.values(data[tab]).forEach(player => {
-      if (!player.lastMatchDate) {
-        player.lastMatchDate = today;
-      }
-    });
-  });
+// 1) Fix abbreviaNome (ritornava un array e usava 'parts' intero)
+export function abbreviaNome(input) {
+  const nome = (input ?? "").toString().trim();
+  if (!nome) return "";
+  const parts = nome.replace(/\s+/g, " ").split(" ");
+  if (parts.length === 1) return parts[0];              // <-- stringa, non array [web:91]
+  const first = String(parts[0] || "");                 // <-- prima parola [web:91]
+  const last  = String(parts[parts.length - 1] || "");
+  return `${first.charAt(0)}. ${last}`;
 }
 
+let data = { singles: {}, doubles: {} };
+let currentTab = 'singles';
+
+document.addEventListener('DOMContentLoaded', () => {
+  const hasLeaderboard = document.getElementById('leaderboard') || document.getElementById('tableWrapper');
+  if (hasLeaderboard) init().catch(console.error); // avvia solo nelle pagine corrette
+});
+
+// 2) Init DOM-ready
+document.addEventListener('DOMContentLoaded', init);
 async function init() {
-  data = await loadLeaderboardData(players);
-  
-  // Aggiungi il giocatore Ospite se non esiste già
-  addGuestPlayer();
+  data = await loadLeaderboardData();
   ensureLastMatchDate();
   applyInactivityDecay();
-  populateSelects();
+  populateSelects(Object.keys(data.singles));
   renderLeaderboard();
   setupEventListeners();
 }
 
-function addGuestPlayer() {
-  const guestData = {
-    elo: 1200,
-    wins: 0,
-    losses: 0,
-    matches: []
-  };
-  
-  // Aggiungi Ospite sia per singles che doubles se non esiste
-  if (!data.singles["Ospite"]) {
-    data.singles["Ospite"] = { ...guestData };
-  }
-  if (!data.doubles["Ospite"]) {
-    data.doubles["Ospite"] = { ...guestData };
-  }
+function ensureLastMatchDate() {
+  const today = new Date().toISOString().slice(0, 10);
+  ['singles', 'doubles'].forEach(tab => {
+    Object.values(data[tab]).forEach(p => { if (!p.lastMatchDate) p.lastMatchDate = today; });
+  });
 }
 
-function populateSelects() {
-  const p1 = document.getElementById('player1');
-  const p2 = document.getElementById('player2');
-  const p3 = document.getElementById('player3');
-  const p4 = document.getElementById('player4');
-
-  if (!p1 || !p2 ) return;
-
-  players.forEach(name => {
-    [p1, p2, p3, p4].forEach(select => {
+function populateSelects(names) {
+  ['player1','player2','player3','player4'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = '';
+    names.forEach(name => {
       const opt = document.createElement('option');
       opt.value = opt.textContent = name;
-      select.appendChild(opt);
+      sel.appendChild(opt);
     });
   });
 }
 
+let listenersBound = false;
+const listenersCtrl = new AbortController();
+
 function setupEventListeners() {
-  if (!document.getElementById('singles') || !document.getElementById('doubles')) return;
-  document.getElementById('singles').addEventListener('change', () => switchTab('singles'));
-  document.getElementById('doubles').addEventListener('change', () => switchTab('doubles'));
-  document.getElementById('addResultButton').addEventListener('click', addResult);
-  document.getElementById('singles').addEventListener('change', updateVsPosition);
-  document.getElementById('doubles').addEventListener('change', updateVsPosition);
+  if (listenersBound) return;            // evita registrazioni multiple
+  listenersBound = true;
+  const signal = listenersCtrl.signal;
+
+  document.getElementById('singles')?.addEventListener('change', () => switchTab('singles'), { signal });
+  document.getElementById('doubles')?.addEventListener('change', () => switchTab('doubles'), { signal });
+  document.getElementById('addResultButton')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    addResult();
+  }, { signal });
 }
 
 function switchTab(tab) {
   currentTab = tab;
-  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-  document.querySelector(`#tab-${tab}`).classList.add('active');
-
-  const isDoubles = tab === 'doubles';
-  document.getElementById('player3').style.display = isDoubles ? 'inline-block' : 'none';
-  document.getElementById('player4').style.display = isDoubles ? 'inline-block' : 'none';
-
+  document.querySelector('#tab-singles')?.classList.toggle('active', tab === 'singles');
+  document.querySelector('#tab-doubles')?.classList.toggle('active', tab === 'doubles');
+  document.getElementById('team2').style.display = tab === 'doubles' ? 'block' : 'none';
   renderLeaderboard();
-  updateVsPosition();
+}
+
+function applyInactivityDecay() {
+  const inactivityDays = 30;
+  const now = new Date();
+  ['singles','doubles'].forEach(t => {
+    Object.values(data[t]).forEach(p => {
+      if (!p.lastMatchDate) return;
+      const diff = (now - new Date(p.lastMatchDate)) / (1000*60*60*24);
+      p.inactive = diff > inactivityDays;
+    });
+  });
 }
 
 function renderLeaderboard() {
   const leaderboard = document.getElementById('leaderboard');
-  let playersArr = Object.entries(data[currentTab])
-    .filter(([name, player]) => name !== "Ospite" && player.matches && player.matches.length > 0)
+  if (!leaderboard) { console.warn('leaderboard non trovata, skip render'); return; }
+  const arr = Object.entries(data[currentTab])
+    .filter(([name]) => name !== "Ospite")
     .map(([name, player]) => {
-      let eloShown = player.elo;
-      if (currentTab === 'singles') {
-        const numMatches = player.matches ? player.matches.length : 0;
-        const reliability = Math.min(1, numMatches / 10);
-        eloShown = Math.round(player.elo * reliability + 120 * (1 - reliability));
-      }
+      const num = (player.wins||0) + (player.losses||0);
+      const reliability = Math.min(1, num / 10);
+      const eloShown = Math.round(player.elo * reliability + 1200 * (1 - reliability));
       return { name, player, eloShown };
     })
-    .sort((a, b) => {
-      // Prima ordina per eloShown
-      if (b.eloShown !== a.eloShown) {
-        return b.eloShown - a.eloShown;
-      }
-      // Poi ordina per elo naturale
-      if (b.player.elo !== a.player.elo) {
-        return b.player.elo - a.player.elo;
-      }
-      // Poi ordina per inattività: attivi sopra inattivi
-      if (!!a.player.inactive !== !!b.player.inactive) {
-        return a.player.inactive ? 1 : -1;
-      }
-      // Se ancora pari, ordina alfabeticamente
-      return a.name.localeCompare(b.name);
-    });
+    .sort((a,b) => b.eloShown - a.eloShown || b.player.elo - a.player.elo || (a.player.inactive ? 1 : -1) || a.name.localeCompare(b.name));
 
-  if (!leaderboard) return;
+  const rows = arr.map((e,i) => {
+    const medalClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const safeName = encodeURIComponent(e.name);
+    const wins = e.player.wins || 0, losses = e.player.losses || 0;
+    const display = abbreviaNome(e.name);
+    const flame = e.player.streak >= 3 ? ' 🔥' : '';
+    const inactive = e.player.inactive ? '<span class="inactive-tag">INATTIVO</span>' : '';
+    return `
+      <tr class="${medalClass}" style="cursor:pointer;" onclick="window.location='stats.html?name=${safeName}'">
+        <td><span class="rank-number">${i+1}</span></td>
+        <td>${display}${flame} ${inactive}</td>
+        <td>${e.eloShown}</td>
+        <td>${wins}</td>
+        <td>${losses}</td>
+      </tr>`;
+  }).join('');
+
   leaderboard.innerHTML = `
     <table>
-      <tr><th>#</th><th>Nome</th><th>ELO</th><th>W</th><th>L</th></tr>
-      ${playersArr.map((entry, i) => {
-        const abbreviatedName = abbreviaNome(entry.name);
-        const wins = entry.player.wins || 0;
-        const losses = entry.player.losses || 0;
-        return `
-          <tr onclick="window.location='stats.html?name=${encodeURIComponent(entry.name)}'">
-            <td><span class="rank-number">${i + 1}</span></td>
-            <td>
-              ${abbreviatedName}
-              ${entry.player.inactive ? '<span class="inactive-tag">INATTIVO</span>' : ''}
-            </td>
-            <td>${entry.eloShown}</td>
-            <td>${wins}</td>
-            <td>${losses}</td>
-          </tr>`;
-      }).join('')}
+      <thead>
+        <tr><th>#</th><th>Nome</th><th>ELO</th><th>W</th><th>L</th></tr>
+      </thead>
+      <tbody>${rows}</tbody>
     </table>
   `;
 }
 
-export function abbreviaNome(nomeCompleto) {
-  const parts = nomeCompleto.trim().split(" ");
-  if (parts.length === 1) return parts[0]; // solo un nome
-  return `${parts[0][0]}. ${parts.slice(1).join(" ")}`;
-}
-
-function parseResult(str) {
-  const sets = str.split(',').map(set => set.trim());
-  return sets.map(set => {
-    const tbMatch = set.match(/(\d+)-(\d+)(\((\d+)\))?/);
-    return tbMatch ? {
-      p1: parseInt(tbMatch[1]),
-      p2: parseInt(tbMatch[2]),
-      tb: tbMatch[4] ? parseInt(tbMatch[4]) : null
-    } : null;
-  });
-}
-
+// 4) Aggiungi risultato con Passkey gating e payload nuovo schema
 async function addResult() {
-  try {
-    // Mostra il modale aggiungendo la classe 'active' all'overlay
-    document.getElementById("passkeyModal").classList.add("active");
+  // chiedi passkey prima di salvare [web:120][web:121]
+  const pass = prompt('Inserisci passkey per salvare');
+  const ok = await checkPasskey(pass);
+  if (!ok) { alert('Passkey errata'); return; }
 
-    return new Promise((resolve, reject) => {
-      const confirmBtn = document.getElementById("confirmPasskey");
-      const cancelBtn = document.getElementById("cancelPasskey");
+  const type = document.querySelector('#doubles')?.checked ? 'doubles' : 'singles';
+  const p1 = document.getElementById('player1')?.value || '';
+  const p2 = document.getElementById('player2')?.value || '';
+  const p3 = document.getElementById('player3')?.value || '';
+  const p4 = document.getElementById('player4')?.value || '';
+  const sets = (document.getElementById('sets')?.value || '')
+    .split(' ')
+    .map(s => s.trim())
+    .filter(s => s && s.includes('-'));
+  const surface = document.getElementById('surface')?.value;
+  if (type === 'singles' && (!p1 || !p2)) return alert('Seleziona i due giocatori');
+  if (type === 'doubles' && (!p1 || !p2 || !p3 || !p4)) return alert('Seleziona tutti i giocatori');
 
-      confirmBtn.onclick = async () => {
-        const input = document.getElementById("passkeyInput").value.trim();
-        const isValid = await checkPasskey(input);
-        if (!isValid) {
-          alert("Passkey errata.");
-          return;
-        }
+  const playersByTeam = type === 'singles' ? [[p1],[p2]] : [[p1,p3],[p2,p4]];
 
-        // Nascondi il modale rimuovendo la classe 'active'
-        document.getElementById("passkeyModal").classList.remove("active");
-        document.getElementById("passkeyInput").value = "";
-        resolve(realAddResult()); // Chiama la vera funzione
-      };
-
-      cancelBtn.onclick = () => {
-        // Nascondi il modale rimuovendo la classe 'active'
-        document.getElementById("passkeyModal").classList.remove("active");
-        document.getElementById("passkeyInput").value = "";
-        reject("Annullato");
-      };
-    });
-
-  } catch (e) {
-    console.error("Errore in addResult:", e);
-    alert("Errore salvando il risultato. Controlla console.");
-  }
-}
-
-async function realAddResult() {
-    if (currentTab === 'singles') {
-      const p1 = document.getElementById('player1').value;
-      const p2 = document.getElementById('player2').value;
-      const resultStr = document.getElementById('setResults').value.trim();
-
-      if (!data.singles[p1] || !data.singles[p2] || p1 === p2 || resultStr === '') {
-        alert("Input non valido.");
-        return;
-      }
-
-      const sets = parseResult(resultStr);
-      if (sets.length === 0) {
-        alert("Formato risultato non valido. Esempio: 6-3, 3-6, 7-6(5)");
-        return;
-      }
-
-      let p1Wins = 0, p2Wins = 0;
-      let summary = [];
-
-      sets.forEach(s => {
-        if (!s) return;
-        summary.push(`${s.p1}-${s.p2}${s.tb !== null ? `(${s.tb})` : ''}`);
-        if (s.p1 > s.p2) p1Wins++;
-        else p2Wins++;
-      });
-
-      const winner = p1Wins > p2Wins ? p1 : p2;
-      const loser = p1Wins > p2Wins ? p2 : p1;
-      const K = 40;
-      const winElo = data.singles[winner].elo * 10;
-      const loseElo = data.singles[loser].elo * 10;
-      const expectedWin = 1 / (1 + Math.pow(10, (loseElo - winElo) / 400));
-      const expectedLose = 1 - expectedWin;
-
-      data.singles[winner].elo = Math.round((winElo + K * (1 - expectedWin)) / 10);
-      data.singles[loser].elo = Math.round((loseElo + K * (0 - expectedLose)) / 10);
-
-      const res = `${p1} vs ${p2}: ${summary.join(', ')} → ${winner} vince`;
-      data.singles[p1].matches.push(res);
-      data.singles[p2].matches.push(res);
-      data.singles[winner].wins++;
-      data.singles[loser].losses++;
-      const today = new Date().toISOString().slice(0, 10);
-      data.singles[p1].lastMatchDate = today;
-      data.singles[p2].lastMatchDate = today;
-
-      // Salva solo i giocatori reali (non Ospite) nel database
-      const playersToSave = {};
-      if (p1 !== "Ospite") playersToSave[p1] = data.singles[p1];
-      if (p2 !== "Ospite") playersToSave[p2] = data.singles[p2];
-
-      if (Object.keys(playersToSave).length > 0) {
-        await saveMatchResult('singles', playersToSave);
-      }
-
-    } else if (currentTab === 'doubles') {
-      const p1 = document.getElementById('player1').value;
-      const p2 = document.getElementById('player2').value;
-      const p3 = document.getElementById('player3').value;
-      const p4 = document.getElementById('player4').value;
-      const resultStr = document.getElementById('setResults').value.trim();
-
-      const team1 = [p1, p2];
-      const team2 = [p3, p4];
-
-      if (
-        team1.some(p => !data.doubles[p]) ||
-        team2.some(p => !data.doubles[p]) ||
-        new Set([...team1, ...team2]).size < 4 ||
-        resultStr === ''
-      ) {
-        alert("Input non valido.");
-        return;
-      }
-
-      const sets = parseResult(resultStr);
-      if (sets.length === 0) {
-        alert("Formato risultato non valido. Esempio: 6-3, 3-6, 7-6(5)");
-        return;
-      }
-
-      let team1Wins = 0, team2Wins = 0;
-      let summary = [];
-
-      sets.forEach(s => {
-        if (!s) return;
-        summary.push(`${s.p1}-${s.p2}${s.tb !== null ? `(${s.tb})` : ''}`);
-        if (s.p1 > s.p2) team1Wins++;
-        else team2Wins++;
-      });
-
-      const winnerTeam = team1Wins > team2Wins ? team1 : team2;
-      const loserTeam = team1Wins > team2Wins ? team2 : team1;
-      const K = 80;
-
-      const winnerElo = ((data.doubles[winnerTeam[0]].elo * 10) + (data.doubles[winnerTeam[1]].elo * 10)) / 2;
-      const loserElo = ((data.doubles[loserTeam[0]].elo * 10) + (data.doubles[loserTeam[1]].elo * 10)) / 2;
-      const expectedWin = 1 / (1 + Math.pow(10, (loserElo - winnerElo) / 400));
-      const expectedLose = 1 - expectedWin;
-
-      const eloChangeWinner = K * (1 - expectedWin);
-      const eloChangeLoser = K * (0 - expectedLose);
-
-      winnerTeam.forEach(p => {
-        data.doubles[p].elo = Math.round((data.doubles[p].elo * 10 + eloChangeWinner / 2) / 10);
-      });
-      loserTeam.forEach(p => {
-        data.doubles[p].elo = Math.round((data.doubles[p].elo * 10 + eloChangeLoser / 2) / 10);
-      });
-
-      const res = `${p1} & ${p2} vs ${p3} & ${p4}: ${summary.join(', ')} → Squadra vincente: ${winnerTeam.join(' & ')}`;
-      winnerTeam.forEach(p => data.doubles[p].matches.push(res));
-      loserTeam.forEach(p => data.doubles[p].matches.push(res));
-      winnerTeam.forEach(p => data.doubles[p].wins++);
-      loserTeam.forEach(p => data.doubles[p].losses++);
-      const today = new Date().toISOString().slice(0, 10);
-      [...winnerTeam, ...loserTeam].forEach(p => {
-        data.doubles[p].lastMatchDate = today;
-      });
-
-      // Salva solo i giocatori reali (non Ospite) nel database
-      const playersToSave = {};
-      [...winnerTeam, ...loserTeam].forEach(p => {
-        if (p !== "Ospite") {
-          playersToSave[p] = data.doubles[p];
-        }
-      });
-      
-      if (Object.keys(playersToSave).length > 0) {
-        await saveMatchResult('doubles', playersToSave);
-      }
-    }
-
+  try{
+    await saveMatchResult({ type, playersByTeam, sets, surface});
+    data = await loadLeaderboardData();
     renderLeaderboard();
-}
-
-function showPlayer(name) {
-  const player = data[currentTab][name];
-  if (!player) return;
-  alert(`Player: ${name}\nELO: ${player.elo}\nPartite:\n${player.matches.join('\n')}`);
-}
-
-function updateVsPosition() {
-  // Check if we're on index.html by looking for key elements
-  const team1 = document.getElementById('team1');
-  const team2 = document.getElementById('team2');
-  const vsElement = document.querySelector('.vs');
-
-  // Exit if we're not on index.html (elements not found)
-  if (!team1 || !team2 || !vsElement) return;
-
-  const isSingles = document.getElementById('singles').checked;
-
-  if (isSingles) {
-    team1.style.display = 'flex';
-    team2.style.display = 'none';
-
-    // VS dentro team1, già nel markup
-    // Se per qualche motivo VS non è dentro team1, lo sposti:
-    if (!team1.contains(vsElement)) {
-      vsElement.remove();
-      // Metti VS tra i due select (tra player1 e player2)
-      const players = team1.querySelectorAll('select');
-      if (players.length >= 2) {
-        players[0].after(vsElement);
-      }
-    }
-  } else {
-    team1.style.display = 'flex';
-    team2.style.display = 'flex';
-
-    // VS tra i due team (fuori dai div team)
-    if (vsElement.parentNode !== team1.parentNode) {
-      vsElement.remove();
-      team1.after(vsElement);
-    }
+    alert('Match salvato!');
+  }catch(err){
+    console.error(err);
+    alert('Errore salvataggio: ' + (err?.message || err));
   }
 }
-
-// Esegui la funzione all'avvio e ogni volta che cambia la tab
-document.querySelectorAll('input[name="matchType"]').forEach(input => {
-  input.addEventListener('change', updateVsPosition);
-});
-
-// Chiamata iniziale per posizionare bene il vs
-updateVsPosition();
-
-/*
-  Consigli:
-  - Il "buff" di inattività (decadimento ELO) dovrebbe essere moderato: 1 punto ogni 2 mesi è ok, ma puoi aumentare a 2-3 punti ogni 2 mesi se vuoi che l'inattività pesi di più.
-  - È meglio applicare il decadimento solo nel frontend: così il database mantiene il vero ELO, e il giocatore riottiene i punti appena torna attivo.
-  - Il tag "INATTIVO" va mostrato solo se il giocatore non gioca da almeno 2 mesi.
-*/
-
-function applyInactivityDecay() {
-  const now = new Date();
-  ['singles', 'doubles'].forEach(tab => {
-    Object.values(data[tab]).forEach(player => {
-      player.inactive = false; // reset
-      if (!player.lastMatchDate) return;
-      const lastDate = new Date(player.lastMatchDate);
-      const months = (now.getFullYear() - lastDate.getFullYear()) * 12 + (now.getMonth() - lastDate.getMonth());
-      const decay = 0.5 * months; // 0.5 punti per mese
-      if (decay > 1) {
-        player.elo = Math.max(0, player.elo - decay);
-        player.inactive = true;
-      }
-    });
-  });
-}
-
-init();
