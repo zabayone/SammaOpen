@@ -126,7 +126,7 @@ export async function saveMatchResult(payload) {
   parsed.forEach(([a, b]) => { if (a > b) winsA++; else winsB++; });
   const winnerTeam = winsA > winsB ? 0 : 1;
 
-  const K = config.eloK || 32;
+  const K = config.eloK || 40;
   const EA = expectedScore(eloA, eloB);
   const SA = winnerTeam === 0 ? 1 : 0;
   const deltaTeamA = K * (SA - EA);
