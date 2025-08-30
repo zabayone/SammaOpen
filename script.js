@@ -70,8 +70,32 @@ function switchTab(tab) {
   currentTab = tab;
   document.querySelector('#tab-singles')?.classList.toggle('active', tab === 'singles');
   document.querySelector('#tab-doubles')?.classList.toggle('active', tab === 'doubles');
-  document.getElementById('team2').style.display = tab === 'doubles' ? 'block' : 'none';
+  const team1 = document.getElementById('team1');
+  const team2 = document.getElementById('team2');
+  if (tab === 'doubles') {
+    // Inject player3 in team1
+    if (!document.getElementById('player3')) {
+      const sel3 = document.createElement('select');
+      sel3.id = 'player3';
+      sel3.innerHTML = '<option value="" disabled selected>Seleziona un giocatore</option>';
+      team1.appendChild(sel3);
+    }
+    // Inject player4 in team2
+    if (!document.getElementById('player4')) {
+      const sel4 = document.createElement('select');
+      sel4.id = 'player4';
+      sel4.innerHTML = '<option value="" disabled selected>Seleziona un giocatore</option>';
+      team2.appendChild(sel4);
+    }
+  } else {
+    // Rimuovi player3 e player4 se presenti
+    const sel3 = document.getElementById('player3');
+    const sel4 = document.getElementById('player4');
+    if (sel3) sel3.remove();
+    if (sel4) sel4.remove();
+  }
   renderLeaderboard();
+  populateSelects(Object.keys(data.singles));
 }
 
 function applyInactivityDecay() {
@@ -158,3 +182,4 @@ async function addResult() {
     alert('Errore salvataggio: ' + (err?.message || err));
   }
 }
+
