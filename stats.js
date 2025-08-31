@@ -91,6 +91,17 @@ function drawEloChart(labels, singlesValues, doublesValues = []) {
             plugins: {
                 legend: {
                     position: 'top'
+                },
+                tooltip: {
+                    yAlign: 'bottom', // Mostra il tooltip sotto il punto
+                    xAlign: 'center',
+                    // offset personalizzato
+                    position: 'nearest',
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.raw}/10`;
+                        }
+                    }
                 }
             },
             scales: {
@@ -301,6 +312,9 @@ async function loadPlayerData() {
     if (Array.isArray(m.participants) && m.participants.some(p => p.pid === pid)) allMatches.push(m);
   });
 
+  // Skill radar chart
+  createPlayerRadarChart(playerName);
+
   // COSTRUZIONE GRAFICO ELO - AGGIUNTO
   const dates = [];
   const singlesEloHistory = [];
@@ -390,3 +404,214 @@ function getSurfaceTextColor(surface) {
             return '#666'; // Grigio scuro di default
     }
 }
+
+// Funzione per ottenere le skill del giocatore con i dati reali
+function getPlayerSkills(playerName) {
+    const playerSkillsData = {
+        "Giacomo Belli": { dritto: 8, rovescio: 8, servizio: 8, volee: 7, stamina: 7, gameplay: 9 },
+        "Giacomo Meazzi": { dritto: 8, rovescio: 7, servizio: 8, volee: 9, stamina: 8, gameplay: 7 },
+        "Andrea Redaelli": { dritto: 7, rovescio: 7, servizio: 7, volee: 8, stamina: 8, gameplay: 9 },
+        "Riccardo Savarè": { dritto: 8, rovescio: 7, servizio: 9, volee: 7, stamina: 6, gameplay: 8 },
+        "Nicola Nespoli": { dritto: 7, rovescio: 7, servizio: 7, volee: 4, stamina: 8, gameplay: 7 },
+        "Christian Joli": { dritto: 6, rovescio: 4, servizio: 5, volee: 6, stamina: 7, gameplay: 5 },
+        "Davide Saccani": { dritto: 7, rovescio: 6, servizio: 8, volee: 5, stamina: 6, gameplay: 6},
+        "Mattia Casulli": { dritto: 7, rovescio: 5, servizio: 6, volee: 4, stamina: 7, gameplay: 5 }
+    };
+    
+    return playerSkillsData[playerName] || { dritto: 50, rovescio: 50, servizio: 50, volee: 50, stamina: 50, gameplay: 50 };
+}
+
+// Plugin personalizzato per l'immagine esagonale al centro
+const hexagonImagePlugin = {
+    id: 'hexagonImage',
+    afterDraw(chart) { // <-- cambia da beforeDraw a afterDraw
+        if (chart.config.type !== 'radar') return;
+        const { ctx, chartArea } = chart;
+        const centerX = (chartArea.left + chartArea.right) / 2;
+        const centerY = (chartArea.top + chartArea.bottom) / 2;
+        const radius = 50;
+
+        ctx.save();
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI / 3) * i - (Math.PI / 2);
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY + radius * Math.sin(angle);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.clip();
+
+        // Controllo robusto sull'immagine
+        const img = chart.playerImage;
+        const isValidImg = img && img.complete && img.naturalWidth > 0 && !img.fallback;
+
+        if (isValidImg) {
+            ctx.globalAlpha = 1;
+            const imgSize = radius * 2;
+            ctx.drawImage(
+                img,
+                centerX - radius,
+                centerY - radius,
+                imgSize,
+                imgSize
+            );
+        } else {
+            ctx.fillStyle = '#ff6b35';
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 15px Helvetica, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            const initials = chart.playerName ? abbreviaNome(chart.playerName) : '?';
+            ctx.fillText(initials, centerX, centerY);
+        }
+
+        ctx.restore();
+        ctx.strokeStyle = 'rgba(74, 74, 74, 0.8)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+            const angle = (Math.PI / 3) * i - (Math.PI / 2);
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY + radius * Math.sin(angle);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+    }
+};
+
+// Funzione per creare il radar chart
+function createPlayerRadarChart(playerName) {
+    const canvas = document.getElementById('playerRadarChart');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    // Distruggi chart esistente se presente
+    if (window.radarChartInstance) {
+        window.radarChartInstance.destroy();
+    }
+    
+    const skills = getPlayerSkills(playerName);
+
+    // Crea l'immagine del giocatore
+    const playerImage = new Image();
+    playerImage.crossOrigin = 'anonymous';
+    let imageLoaded = false;
+    // imposta il z index per l'immagine
+
+    // Prova diversi formati di immagine
+    const imageName = playerName.replace(/\s+/g, '_').toLowerCase();
+    playerImage.src = `photos/${imageName}.jpg`;
+
+    // Fallback per altri formati
+    playerImage.onerror = function() {
+        if (!imageLoaded) {
+            playerImage.src = `photos/${imageName}.png`;
+            imageLoaded = true;
+            playerImage.onerror = function() {
+                // Se anche il PNG non esiste, imposta una proprietà per il fallback
+                playerImage.fallback = true;
+                window.radarChartInstance.update();
+            };
+        }
+    };
+
+    window.radarChartInstance = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: [
+                'Dritto',
+                'Rovescio', 
+                'Servizio',
+                'Volée',
+                'Stamina',
+                'Gameplay'
+            ],
+            datasets: [{
+                label: 'Punti di Forza',
+                data: [
+                    skills.dritto,
+                    skills.rovescio,
+                    skills.servizio,
+                    skills.volee,
+                    skills.stamina,
+                    skills.gameplay
+                ],
+                borderColor: '#ff6b35',
+                backgroundColor: 'rgba(227, 135, 54, 0.38)',
+                z_index: 1,
+                borderWidth: 2,
+                pointBackgroundColor: '#ff6b35',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    yAlign: 'bottom', // Mostra il tooltip sotto il punto
+                    xAlign: 'center',
+                    // offset personalizzato
+                    position: 'nearest',
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.raw}/10`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                r: {
+                    min: 0,
+                    max: 10,
+                    stepSize: 2,
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(136, 93, 78, 0.29)',
+                        lineWidth: 1,
+                    },
+                    angleLines: {
+                        color: 'rgba(212, 112, 76, 0.3)',
+                        lineWidth: 1
+                    },
+                    pointLabels: {
+                        font: {
+                            size: 10,
+                            weight: 'bold',
+                            family: 'Helvetica, Arial, sans-serif'
+                        },
+                        color: '#4d362d',
+                        padding: 5
+                    },
+                    ticks: {
+                        display: false,
+                        stepSize: 2
+                    }
+                }
+            }
+        },
+        plugins: [hexagonImagePlugin]
+    });
+
+    // Assegna l'immagine e il nome al chart per il plugin
+    window.radarChartInstance.playerImage = playerImage;
+    window.radarChartInstance.playerName = playerName;
+
+    // Ricarica il chart quando l'immagine è caricata
+    playerImage.onload = function() {
+        window.radarChartInstance.update();
+    };
+}
+
+

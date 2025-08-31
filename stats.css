@@ -251,6 +251,29 @@ h2 {
   font-weight: 700;
 }
 
+/* Radar Chart Section */
+.radar-chart-section {
+    margin-bottom: 30px;
+}
+
+.radar-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    height: 400px;
+    margin: 0 auto;
+    background: #bcb4a527;
+    border: 3px solid #1e610f91;
+    border-radius: 12px;
+    padding: 7px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+#playerRadarChart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
 /* Responsive: iPhone e piccoli schermi */
 @media (max-width: 768px) {
   body { padding: 1rem; }
@@ -271,8 +294,14 @@ h2 {
   .player-initial { width: 28px; height: 28px; font-size: 0.8rem; flex: 0 0 28px; }
   .player-name { font-size: 0.95rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-  .stats-card { min-width: 100px; padding: 12px 16px; }
+  .stats-card { min-width: 80px; padding: 12px 16px; max-height: 50px;}
   .stats-card .stats-value { font-size: 1.2rem; }
+
+  .radar-wrapper {
+        max-width: 310px;
+        height: 300px;
+        padding: 8px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -282,4 +311,10 @@ h2 {
   .set-scores { min-width: 28px; }
   .score-set { padding: 4px 6px; font-size: 0.8rem; }
   .match-info { flex-direction: column; gap: 4px; text-align: center; }
+
+  radar-wrapper {
+        max-width: 200px;
+        height: 200px;
+        padding: 10px;
+    }
 }
