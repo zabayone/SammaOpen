@@ -1,51 +1,121 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Statistiche Giocatore</title>
-  <link rel="stylesheet" href="stats.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script type="module" src="stats.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiche Giocatore</title>
+    <link rel="stylesheet" href="stats.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <div class="header">
-    <a href="index.html" id="logo-link" aria-label="Home">
-        <img src="logo.png" alt="Lüdesan Garros Lodi" class="logo" />
-    </a>
-    <h1 id="player-name">Statistiche</h1>
-  </div>
+    <div class="stats-container">
+        <!-- Header con logo e nome -->
+        <div class="header">
+            <img src="logo.png" alt="Logo" class="logo">
+            <h1 id="player-name">Statistiche Giocatore</h1>
+        </div>
 
-  <div class="stats-container">
-    <div class="radar-chart-section">
-    <h2>Skillset</h2>
-    <div class="radar-wrapper">
-        <canvas id="playerRadarChart"></canvas>
+        <!-- Profilo giocatore con foto rotonda e statistiche -->
+        <div class="player-stats-section">
+            <h2>Profilo Giocatore</h2>
+            <div class="player-profile">
+                <!-- Foto rotonda a sinistra -->
+                <div class="player-photo">
+                    <div class="round-photo" id="playerPhoto">
+                        <span class="player-initials" id="playerInitials">?</span>
+                    </div>
+                </div>
+                
+                <!-- Statistiche a barre a destra -->
+                <div class="player-skills">
+                    <div class="skill-item">
+                        <label>Dritto</label>
+                        <div class="skill-bar">
+                            <div class="skill-fill skill-dritto" data-value="0"></div>
+                        </div>
+                        <span class="skill-value">0</span>
+                    </div>
+                    
+                    <div class="skill-item">
+                        <label>Rovescio</label>
+                        <div class="skill-bar">
+                            <div class="skill-fill skill-rovescio" data-value="0"></div>
+                        </div>
+                        <span class="skill-value">0</span>
+                    </div>
+                    
+                    <div class="skill-item">
+                        <label>Servizio</label>
+                        <div class="skill-bar">
+                            <div class="skill-fill skill-servizio" data-value="0"></div>
+                        </div>
+                        <span class="skill-value">0</span>
+                    </div>
+                    
+                    <div class="skill-item">
+                        <label>Volée</label>
+                        <div class="skill-bar">
+                            <div class="skill-fill skill-volee" data-value="0"></div>
+                        </div>
+                        <span class="skill-value">0</span>
+                    </div>
+                    
+                    <div class="skill-item">
+                        <label>Stamina</label>
+                        <div class="skill-bar">
+                            <div class="skill-fill skill-stamina" data-value="0"></div>
+                        </div>
+                        <span class="skill-value">0</span>
+                    </div>
+                    
+                    <div class="skill-item">
+                        <label>Gameplay</label>
+                        <div class="skill-bar">
+                            <div class="skill-fill skill-gameplay" data-value="0"></div>
+                        </div>
+                        <span class="skill-value">0</span>
+                    </div>
+                    
+                    <!-- Overall Score -->
+                    <div class="overall-score">
+                        <label>Overall</label>
+                        <div class="overall-value" id="overallValue">0/60</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cards ELO e Streak sotto le statistiche -->
+        <div class="stats-cards-section">
+            <div class="stats-card">
+                <div class="stats-label">ELO Singolo</div>
+                <div class="stats-value" id="elo-singles">—</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-label">ELO Doppio</div>
+                <div class="stats-value" id="elo-doubles">—</div>
+            </div>
+            <div class="stats-card">
+                <div class="stats-label">Streak</div>
+                <div class="stats-value" id="streak-singles">0</div>
+            </div>
+        </div>
+
+        <!-- Grafico ELO -->
+        <div class="chart-wrapper">
+            <canvas id="eloChart"></canvas>
+        </div>
+
+        <!-- Liste partite -->
+        <div class="matches-section">
+            <h2>Partite Singolo</h2>
+            <div class="match-list" id="matchlist-singles"></div>
+
+            <h2>Partite Doppio</h2>
+            <div class="match-list" id="matchlist-doubles"></div>
+        </div>
     </div>
-</div>
-    <h2>Andamento ELO</h2>
-    <div class="chart-wrapper">
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-      <canvas id="eloChart"></canvas>
-    </div>
-    <div class="stats-section" id="player-cards">
-  <div class="stats-card">
-    <div class="stats-label">ELO Singolo</div>
-    <div class="stats-value" id="elo-singles">—</div>
-  </div>
-  <div class="stats-card">
-    <div class="stats-label">ELO Doppio</div>
-    <div class="stats-value" id="elo-doubles">—</div>
-  </div>
-  <div class="stats-card">
-    <div class="stats-label">Streak</div>
-    <div class="stats-value" id="streak-singles">0</div>
-  </div>
-</div>
-    <h3>Partite Singolo</h3>
-    <div id="matchlist-singles" class="match-list"></div>
-    <h3>Partite Doppio</h3>
-    <div id="matchlist-doubles" class="match-list"></div>
-  </div>
+
+    <script type="module" src="stats.js"></script>
 </body>
 </html>
