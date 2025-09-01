@@ -112,17 +112,17 @@ body {
 .round-photo {
     width: 160px;
     height: 160px;
-    border-radius: 50%;
+    border-radius: 20%;
     position: relative;
     margin: 0 auto;
-    background: #ff6b35;
+    background: #612f1b;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     background-size: cover;
     background-position: center;
-    border: 5px solid #f8f8f8;
+    border: 2px solid #ff6b35;
     box-shadow: 0 6px 16px rgba(0,0,0,0.2);
 }
 
@@ -496,10 +496,11 @@ h3 {
     .skill-item label {
         width: 75px; /* Larghezza etichette ridotta su tablet */
         font-size: 0.9rem;
+        margin-right: 15px;
     }
     
     .skill-bar {
-        max-width: 280px; /* Riduce larghezza massima barre su tablet */
+        max-width: 250px; /* Riduce larghezza massima barre su tablet */
     }
     
     .skill-value {
@@ -645,5 +646,260 @@ h3 {
         flex-direction: column; 
         gap: 4px; 
         text-align: center; 
+    }
+}
+/* Layout principale - Desktop: foto sopra, palmares sotto, skills a destra */
+.player-left-section {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    flex: 0 0 auto;
+    z-index: 1;
+}
+
+/* Palmares Section - STESSA DIMENSIONE DELLA FOTO */
+.palmares-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    padding: 15px 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 160px; /* STESSA LARGHEZZA DELLA FOTO */
+    height: 160px; /* STESSA ALTEZZA DELLA FOTO */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.palmares-section h3 {
+    font-size: 0.9rem;
+    color: #4d362d;
+    margin: 0 0 10px 0;
+    text-align: center;
+    font-weight: 700;
+    border-bottom: 2px solid #f7931e;
+    padding-bottom: 5px;
+}
+
+/* Medals Container - Più compatto */
+.medals-container {
+    display: flex;
+    justify-content: space-around;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.medal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 4px;
+    border-radius: 6px;
+    background: #ffffff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+    min-width: 40px;
+    height: 50px;
+}
+
+.medal:hover {
+    transform: translateY(-1px);
+}
+
+.medal-icon {
+    font-size: 1.4rem;
+    margin-bottom: 2px;
+}
+
+.medal-count {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #4d362d;
+    margin-bottom: 1px;
+    line-height: 1;
+}
+
+.medal-label {
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: #666;
+    line-height: 1;
+}
+
+.gold-medal {
+    border-top: 2px solid #ffd700;
+}
+
+.silver-medal {
+    border-top: 2px solid #c0c0c0;
+}
+
+.bronze-medal {
+    border-top: 2px solid #cd7f32;
+}
+
+/* Achievements Section - Compatta */
+.achievements-section {
+    flex: 1;
+}
+
+.achievements-section h4 {
+    font-size: 0.8rem;
+    color: #4d362d;
+    margin: 0 0 6px 0;
+    text-align: center;
+    font-weight: 600;
+}
+
+.achievements-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 60px;
+    overflow-y: auto;
+    padding-right: 2px;
+}
+
+.achievement-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    background: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    font-size: 0.7rem;
+    transition: background-color 0.2s ease;
+}
+
+.achievement-item:hover {
+    background: #f8f9fa;
+}
+
+.achievement-icon {
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.achievement-text {
+    flex: 1;
+    color: #4d362d;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* RESPONSIVE - Mobile: foto a sinistra, palmares a destra, skills sotto */
+@media (max-width: 768px) {
+    .player-profile {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 20px;
+        padding: 20px 15px;
+        max-width: 95%;
+    }
+    
+    /* Su tablet/mobile: foto e palmares affiancati */
+    .player-left-section {
+        flex-direction: row;
+        gap: 15px;
+        width: 100%;
+        justify-content: flex-start;
+        align-items: flex-start;
+    }
+    
+    .player-photo {
+        flex: 0 0 130px;
+    }
+    
+    .round-photo {
+        width: 120px;
+        height: 120px;
+        border-width: 2px;
+    }
+    
+    .player-initials {
+        font-size: 20px;
+    }
+    
+    /* Palmares stessa dimensione della foto su mobile */
+    .palmares-section {
+        width: 50%; /* STESSA LARGHEZZA DELLA FOTO SU MOBILE */
+        height: 100px; /* STESSA ALTEZZA DELLA FOTO SU MOBILE */
+        padding: 10px 8px;
+        flex: none;
+    }
+    
+    .palmares-section h3 {
+        font-size: 0.8rem;
+        margin-bottom: 8px;
+        padding-bottom: 4px;
+    }
+    
+    .medals-container {
+        gap: 4px;
+        margin-bottom: 6px;
+    }
+    
+    .medal {
+        min-width: 30px;
+        height: 40px;
+        padding: 4px 2px;
+    }
+    
+    .medal-icon {
+        font-size: 1.1rem;
+    }
+    
+    .medal-count {
+        font-size: 0.9rem;
+    }
+    
+    .medal-label {
+        font-size: 0.55rem;
+    }
+    
+    .achievements-section h4 {
+        font-size: 0.7rem;
+        margin-bottom: 4px;
+    }
+    
+    .achievements-container {
+        max-height: 45px;
+        gap: 2px;
+    }
+    
+    .achievement-item {
+        padding: 2px 4px;
+        font-size: 0.6rem;
+    }
+    
+    .achievement-icon {
+        font-size: 0.8rem;
+    }
+    
+    /* Skills section sotto */
+    .player-skills {
+        width: 100%;
+        max-width: 100%;
+        margin-top: 15px;
+    }
+    
+    .skill-bar {
+        max-width: 280px;
+    }
+    
+    .skill-item label {
+        width: 75px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 390px)  {
+    .palmares-section{
+        width: 43%;
     }
 }

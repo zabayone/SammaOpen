@@ -1,5 +1,5 @@
 import { initializeApp, getApp, getApps } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
-import { getFirestore, collection, getDocs, getDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, getDoc, doc, query, orderBy, setDoc } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 import { abbreviaNome } from "./script.js";
 import { nameToPlayerId, getConfig } from "./server.js";
 
@@ -23,6 +23,34 @@ const containerSingles = document.getElementById("matchlist-singles");
 const containerDoubles = document.getElementById("matchlist-doubles");
 let eloChartInstance = null;
 
+/* Achievement Definitions */
+const ACHIEVEMENTS = {
+    gigante: {
+        id: "gigante",
+        name: "Gigante",
+        description: "Ha sconfitto un giocatore con 100+ punti ELO in più",
+        icon: "🗿"
+    },
+    rampage: {
+        id: "rampage", 
+        name: "Rampage",
+        description: "Streak da 5 vittorie consecutive",
+        icon: "🔥"
+    },
+    bagel: {
+        id: "bagel",
+        name: "Bagel", 
+        description: "Ha vinto un set 6-0",
+        icon: "🥯"
+    },
+    breadstick: {
+        id: "breadstick",
+        name: "Breadstick",
+        description: "Ha vinto un set 6-1", 
+        icon: "🥖"
+    }
+};
+
 /* Initialization */
 document.addEventListener('DOMContentLoaded', () => {
     const isStats = document.getElementById('player-name') || document.getElementById('eloChart');
@@ -33,20 +61,150 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-/* Player Skills Data */
-function getPlayerSkills(playerName) {
-    const playerSkillsData = {
-        "Giacomo Belli": { dritto: 8, rovescio: 8, servizio: 8, volee: 7, stamina: 7, gameplay: 9 },
-        "Giacomo Meazzi": { dritto: 8, rovescio: 7, servizio: 8, volee: 9, stamina: 8, gameplay: 7 },
-        "Andrea Redaelli": { dritto: 7, rovescio: 7, servizio: 7, volee: 8, stamina: 8, gameplay: 9 },
-        "Riccardo Savarè": { dritto: 8, rovescio: 7, servizio: 9, volee: 7, stamina: 6, gameplay: 8 },
-        "Nicola Nespoli": { dritto: 7, rovescio: 7, servizio: 7, volee: 4, stamina: 8, gameplay: 7 },
-        "Christian Joli": { dritto: 6, rovescio: 4, servizio: 5, volee: 6, stamina: 7, gameplay: 5 },
-        "Davide Saccani": { dritto: 7, rovescio: 6, servizio: 8, volee: 5, stamina: 6, gameplay: 6 },
-        "Mattia Casulli": { dritto: 7, rovescio: 5, servizio: 6, volee: 4, stamina: 7, gameplay: 5 }
-    };
+/* Database Functions */
+async function getPlayerStats(playerName) {
+    try {
+        const pid = await nameToPlayerId(playerName);
+        const docRef = doc(db, "player_stats", pid);
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+            return docSnap.data();
+        } else {
+            // Inizializza stats di default
+            const defaultStats = {
+                dritto: 5, rovescio: 5, servizio: 5, volee: 5, stamina: 5, gameplay: 5,
+                gold: 0, silver: 0, bronze: 0,
+                achievements: []
+            };
+            await setDoc(docRef, defaultStats);
+            return defaultStats;
+        }
+    } catch (error) {
+        console.error("Errore nel recuperare le stats:", error);
+        return { dritto: 5, rovescio: 5, servizio: 5, volee: 5, stamina: 5, gameplay: 5, gold: 0, silver: 0, bronze: 0, achievements: [] };
+    }
+}
+
+async function updatePlayerStats(playerName, newStats) {
+    try {
+        const pid = await nameToPlayerId(playerName);
+        const docRef = doc(db, "player_stats", pid);
+        await setDoc(docRef, newStats, { merge: true });
+    } catch (error) {
+        console.error("Errore nell'aggiornare le stats:", error);
+    }
+}
+
+/* Achievement Calculation Functions */
+function checkGiganteAchievement(matches, pid, namesById) {
+    return matches.some(match => {
+        const participants = match.participants || [];
+        const player = participants.find(p => p.pid === pid);
+        const opponent = participants.find(p => p.pid !== pid);
+        
+        if (!player || !opponent) return false;
+        
+        const playerElo = player.eloStart || 1200;
+        const opponentElo = opponent.eloStart || 1200;
+        const eloDiff = opponentElo - playerElo;
+        
+        // Vittoria contro avversario con 100+ ELO in più
+        return eloDiff >= 100 && ((match.winnerTeam === 0 && player.team === 0) || (match.winnerTeam === 1 && player.team === 1));
+    });
+}
+
+function checkRampageAchievement(matches, pid) {
+    // Ordina le partite per data
+    const sortedMatches = matches
+        .filter(m => m.participants.some(p => p.pid === pid))
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
     
-    return playerSkillsData[playerName] || { dritto: 0, rovescio: 0, servizio: 0, volee: 0, stamina: 0, gameplay: 0 };
+    let currentStreak = 0;
+    let maxStreak = 0;
+    
+    sortedMatches.forEach(match => {
+        const player = match.participants.find(p => p.pid === pid);
+        const won = (match.winnerTeam === 0 && player.team === 0) || (match.winnerTeam === 1 && player.team === 1);
+        
+        if (won) {
+            currentStreak++;
+            maxStreak = Math.max(maxStreak, currentStreak);
+        } else {
+            currentStreak = 0;
+        }
+    });
+    
+    return maxStreak >= 5;
+}
+
+function checkBagelAchievement(matches, pid) {
+    return matches.some(match => {
+        if (!match.sets || !Array.isArray(match.sets)) return false;
+        
+        const player = match.participants.find(p => p.pid === pid);
+        const won = (match.winnerTeam === 0 && player.team === 0) || (match.winnerTeam === 1 && player.team === 1);
+        
+        if (!won) return false;
+        
+        return match.sets.some(set => {
+            const [a, b] = set.split('-').map(n => parseInt(n, 10));
+            return (player.team === 0 && a === 6 && b === 0) || (player.team === 1 && b === 6 && a === 0);
+        });
+    });
+}
+
+function checkBreadstickAchievement(matches, pid) {
+    return matches.some(match => {
+        if (!match.sets || !Array.isArray(match.sets)) return false;
+        
+        const player = match.participants.find(p => p.pid === pid);
+        const won = (match.winnerTeam === 0 && player.team === 0) || (match.winnerTeam === 1 && player.team === 1);
+        
+        if (!won) return false;
+        
+        return match.sets.some(set => {
+            const [a, b] = set.split('-').map(n => parseInt(n, 10));
+            return (player.team === 0 && a === 6 && b === 1) || (player.team === 1 && b === 6 && a === 1);
+        });
+    });
+}
+
+async function calculateAchievements(playerName, matches, namesById) {
+    const pid = await nameToPlayerId(playerName);
+    const currentStats = await getPlayerStats(playerName);
+    const currentAchievements = currentStats.achievements || [];
+    
+    const achievementChecks = [
+        { id: 'gigante', check: () => checkGiganteAchievement(matches, pid, namesById) },
+        { id: 'rampage', check: () => checkRampageAchievement(matches, pid) },
+        { id: 'bagel', check: () => checkBagelAchievement(matches, pid) },
+        { id: 'breadstick', check: () => checkBreadstickAchievement(matches, pid) }
+    ];
+    
+    let newAchievements = [...currentAchievements];
+    let hasNewAchievements = false;
+    
+    achievementChecks.forEach(({ id, check }) => {
+        const alreadyHas = currentAchievements.some(a => a.id === id);
+        
+        if (!alreadyHas && check()) {
+            newAchievements.push({
+                id: id,
+                unlocked: true,
+                date: new Date().toISOString()
+            });
+            hasNewAchievements = true;
+        }
+    });
+    
+    if (hasNewAchievements) {
+        const updatedStats = { ...currentStats, achievements: newAchievements };
+        await updatePlayerStats(playerName, updatedStats);
+        return newAchievements;
+    }
+    
+    return currentAchievements;
 }
 
 /* Surface Color Functions */
@@ -79,15 +237,6 @@ function getSurfaceTextColor(surface) {
 }
 
 /* Player Profile Functions */
-function createPlayerProfile(playerName) {
-    const skills = getPlayerSkills(playerName);
-    const overall = skills.dritto + skills.rovescio + skills.servizio + 
-                   skills.volee + skills.stamina + skills.gameplay;
-    
-    updatePlayerPhoto(playerName);
-    setTimeout(() => animateSkillBars(skills, overall), 300);
-}
-
 function updatePlayerPhoto(playerName) {
     const photoContainer = document.getElementById('playerPhoto');
     const initialsEl = document.getElementById('playerInitials');
@@ -135,20 +284,14 @@ function animateSkillBars(skills, overall) {
                 const value = skills[mapping.key];
                 const percentage = (value / 10) * 100;
                 
-                // Reset iniziale
                 fillEl.style.width = '0%';
                 valueEl.textContent = value;
-                
-                // Posiziona il valore all'interno della barra riempita
                 fillEl.appendChild(valueEl);
                 
-                // Anima la barra
                 setTimeout(() => {
                     fillEl.style.width = `${percentage}%`;
                     fillEl.setAttribute('data-value', value);
                 }, 100);
-            } else {
-                console.error(`Elements not found for ${mapping.key}`);
             }
         }, index * 150);
     });
@@ -173,6 +316,85 @@ function animateSkillBars(skills, overall) {
     }, 1200);
 }
 
+function updatePlayerPalmares(stats) {
+    const goldCount = document.getElementById('gold-count');
+    const silverCount = document.getElementById('silver-count');
+    const bronzeCount = document.getElementById('bronze-count');
+    
+    if (goldCount) goldCount.textContent = stats.gold || 0;
+    if (silverCount) silverCount.textContent = stats.silver || 0;
+    if (bronzeCount) bronzeCount.textContent = stats.bronze || 0;
+    
+    // Anima i contatori
+    animateCounters({ gold: stats.gold || 0, silver: stats.silver || 0, bronze: stats.bronze || 0 });
+}
+
+function updatePlayerAchievements(achievements) {
+    const container = document.getElementById('achievements-container');
+    
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    if (!achievements || achievements.length === 0) {
+        container.innerHTML = '<div class="achievement-item"><span class="achievement-text">Nessun achievement</span></div>';
+        return;
+    }
+    
+    achievements.forEach(achievement => {
+        const achievementDef = ACHIEVEMENTS[achievement.id];
+        if (!achievementDef) return;
+        
+        const achievementEl = document.createElement('div');
+        achievementEl.className = 'achievement-item';
+        achievementEl.innerHTML = `
+            <span class="achievement-icon">${achievementDef.icon}</span>
+            <div class="achievement-details">
+                <div class="achievement-text">${achievementDef.name}</div>
+            </div>
+        `;
+        container.appendChild(achievementEl);
+    });
+}
+
+function animateCounters(palmares) {
+    const counters = [
+        { element: document.getElementById('gold-count'), target: palmares.gold },
+        { element: document.getElementById('silver-count'), target: palmares.silver },
+        { element: document.getElementById('bronze-count'), target: palmares.bronze }
+    ];
+    
+    counters.forEach((counter, index) => {
+        if (!counter.element) return;
+        
+        setTimeout(() => {
+            let current = 0;
+            const increment = counter.target / 20;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= counter.target) {
+                    current = counter.target;
+                    clearInterval(timer);
+                }
+                counter.element.textContent = Math.round(current);
+            }, 50);
+        }, index * 200);
+    });
+}
+
+async function createPlayerProfile(playerName, matches, namesById) {
+    const stats = await getPlayerStats(playerName);
+    const achievements = await calculateAchievements(playerName, matches, namesById);
+    
+    const overall = stats.dritto + stats.rovescio + stats.servizio + 
+                   stats.volee + stats.stamina + stats.gameplay;
+    
+    updatePlayerPhoto(playerName);
+    updatePlayerPalmares(stats);
+    updatePlayerAchievements(achievements);
+    setTimeout(() => animateSkillBars(stats, overall), 300);
+}
+
 /* Chart Functions */
 function drawEloChart(labels, singlesValues, doublesValues = []) {
     const canvas = document.getElementById('eloChart');
@@ -193,7 +415,7 @@ function drawEloChart(labels, singlesValues, doublesValues = []) {
     if (Array.isArray(singlesValues) && singlesValues.length) {
         datasets.push({
             label: 'ELO Singolo',
-             singlesValues,
+             singlesValues, // CORRETTO: aggiunto ''
             borderColor: '#ff6b35',
             backgroundColor: 'rgba(255,107,53,0.15)',
             borderWidth: 3,
@@ -207,7 +429,7 @@ function drawEloChart(labels, singlesValues, doublesValues = []) {
     if (Array.isArray(doublesValues) && doublesValues.length) {
         datasets.push({
             label: 'ELO Doppio',
-             doublesValues,
+             doublesValues, // CORRETTO: aggiunto ''
             borderColor: '#2b7a78',
             backgroundColor: 'rgba(43,122,120,0.15)',
             borderWidth: 3,
@@ -439,8 +661,8 @@ async function loadPlayerData() {
         }
     });
 
-    // Create player profile
-    createPlayerProfile(playerName);
+    // Create player profile - PASSA matches e namesById
+    await createPlayerProfile(playerName, allMatches, namesById);
 
     // Build ELO chart
     const dates = [];
@@ -489,7 +711,7 @@ async function loadPlayerData() {
                 .sort((a, b) => new Date(b.date) - new Date(a.date))
                 .forEach(m => containerSingles.appendChild(renderMatchBox(m, pid, namesById)));
         } else {
-            containerSingles.innerHTML = '<p>Nessuna partita di singolo giocata.</p>';
+            containerSingles.innerHTML = '<p>Nessuna partita giocata.</p>';
         }
     }
 
@@ -500,7 +722,7 @@ async function loadPlayerData() {
                 .sort((a, b) => new Date(b.date) - new Date(a.date))
                 .forEach(m => containerDoubles.appendChild(renderMatchBox(m, pid, namesById)));
         } else {
-            containerDoubles.innerHTML = '<p>Nessuna partita di doppio giocata.</p>';
+            containerDoubles.innerHTML = '<p>Nessuna partita giocata.</p>';
         }
     }
 }

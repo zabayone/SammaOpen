@@ -19,10 +19,41 @@
         <div class="player-stats-section">
             <h2>Profilo Giocatore</h2>
             <div class="player-profile">
-                <!-- Foto rotonda a sinistra -->
-                <div class="player-photo">
-                    <div class="round-photo" id="playerPhoto">
-                        <span class="player-initials" id="playerInitials">?</span>
+                <!-- Layout desktop: foto sopra, palmares sotto, skills a destra -->
+                <!-- Layout mobile: foto e palmares affiancati, skills sotto -->
+                
+                <div class="player-left-section">
+                    <!-- Foto rotonda -->
+                    <div class="player-photo">
+                        <div class="round-photo" id="playerPhoto">
+                            <span class="player-initials" id="playerInitials">?</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Palmares -->
+                    <div class="palmares-section">
+                        <div class="medals-container">
+                            <div class="medal gold-medal">
+                                <div class="medal-icon">🥇</div>
+                                <div class="medal-count" id="gold-count">0</div>
+                            </div>
+                            <div class="medal silver-medal">
+                                <div class="medal-icon">🥈</div>
+                                <div class="medal-count" id="silver-count">0</div>
+                            </div>
+                            <div class="medal bronze-medal">
+                                <div class="medal-icon">🥉</div>
+                                <div class="medal-count" id="bronze-count">0</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Achievements -->
+                        <div class="achievements-section">
+                            <h4>Achievements</h4>
+                            <div class="achievements-container" id="achievements-container">
+                                <!-- Gli achievements saranno popolati via JavaScript -->
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
