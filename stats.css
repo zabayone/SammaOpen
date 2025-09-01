@@ -1,998 +1,545 @@
-/* ================================================
-   RESET E BASE STYLES
-   ================================================ */
+/* ================================
+Design tokens
+================================ */
+:root {
+  --bg: #f7f4ed;
+  --text: #2c2c2c;
+  --heading: #4d362d;
+  --brand-1: #ff6b35;
+  --brand-2: #f7931e;
+  --brand-3: #109820;
+  --brand-4: #32cd32;
+  --neutral-0: #ffffff;
+  --neutral-50: #f8f8f8;
+  --neutral-100: #f0f0f0;
+  --neutral-200: #e9ecef;
+  --neutral-300: #e0e0e0;
+  --good: #2ecc40;
+  --warn: #e36f10;
 
-*, *::before, *::after {
-    box-sizing: border-box;
+  --radius-12: 12px;
+  --shadow-1: 0 2px 6px rgba(0, 0, 0, 0.292);
+  --shadow-2: 0 6px 16px rgba(0, 0, 0, 0.302);
+
+  --gap-xs: 6px;
+  --gap-s: 10px;
+  --gap-m: 16px;
+  --gap-l: 20px;
+  --gap-xl: 24px;
+
+  --pad-xs: 8px;
+  --pad-s: 10px;
+  --pad-m: 16px;
+  --pad-l: 20px;
+  --pad-xl: 28px;
+
+  --container: 1000px;
+
+  --border: 1px solid var(--neutral-300);
+
+  --fs-300: clamp(0.9rem, 0.85rem + 0.3vw, 1rem);
+  --fs-400: clamp(1rem, 0.95rem + 0.4vw, 1.15rem);
+  --fs-500: clamp(1.1rem, 1rem + 0.6vw, 1.35rem);
+  --fs-600: clamp(1.3rem, 1.1rem + 1.2vw, 1.8rem);
+  --fs-700: clamp(1.6rem, 1.2rem + 1.8vw, 2.3rem);
 }
 
+/* Reset & base */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f7f4ed;
-    color: #2c2c2c;
-    margin: 0;
-    padding: 2rem;
-    line-height: 1.4;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
+  padding: clamp(1rem, 2vw, 2rem);
 }
 
-/* ================================================
-   LAYOUT CONTAINERS
-   ================================================ */
-
+/* Layout container */
 .stats-container {
-    max-width: 800px;
-    margin: auto;
-    padding: 1rem;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--pad-s);
 }
 
-/* ================================================
-   HEADER SECTION
-   ================================================ */
-
+/* Header */
 .header {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    margin-bottom: 24px;
-    justify-content: center;
-    left: 50%;
-    width: 90%;
-    transform: translateX(-50%);
-    position: relative;
-    padding-bottom: 20px;
-    background: #f7f4ed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap-m);
+  margin: 0 auto var(--gap-xl) auto;
+  position: relative;
+  width: 100%;
+  max-width: var(--container);
+  padding-bottom: var(--pad-m);
+  background: var(--bg);
 }
-
 .header::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    margin-top: 10px;
-    bottom: 0;
-    height: 3.5px;
-    width: 100%;
-    background: linear-gradient(to right, #f7931e, #109820);
-    pointer-events: none;
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: linear-gradient(to right, var(--brand-2), var(--brand-3));
+  pointer-events: none;
 }
+.logo { width: clamp(56px, 7vw, 84px); height: auto; }
+#player-name { margin: 0; font-size: var(--fs-700); color: var(--heading); font-weight: 800; }
 
-.logo {
-    width: 80px;
-    margin-top: 25px;
-    height: auto;
-    margin-bottom: 10px;
-    position: static;
-    transform: none;
-    display: block;
-}
-
-#player-name {
-    font-size: 1.8rem;
-    color: #4d362d;
-    margin: 10px 0 0 0;
-    font-weight: 700;
-}
-
-/* ================================================
-   HEADINGS
-   ================================================ */
-
+/* Headings */
 h2 {
-    font-size: 1.6rem;
-    margin-top: 0.5rem;
-    margin-bottom: 1rem;
-    color: #4d362d;
-    border-left: 4px solid #f7931e;
-    padding-left: 0.5rem;
+  font-size: var(--fs-600);
+  margin: var(--gap-s) 0 var(--gap-m);
+  color: var(--heading);
+  border-left: 4px solid var(--brand-2);
+  padding-left: var(--gap-s);
 }
-
 h3 {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
-    color: #4d362d;
-    border-bottom: 3px solid #f7931e;
+  font-size: var(--fs-500);
+  color: var(--heading);
+  margin: 0 0 var(--gap-m) 0;
+  padding-bottom: var(--gap-s);
+  border-bottom: 3px solid var(--brand-2);
 }
 
-/* ================================================
-   PLAYER PROFILE SECTION
-   ================================================ */
-
-.player-stats-section {
-    margin-bottom: 25px;
-}
-
+/* Player profile card (PC: 2 colonne) */
 .player-profile {
-    display: flex;
-    gap: 40px;
-    align-items: flex-start;
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 35px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-    max-width: 800px;
-    margin: 0 auto;
-    position: relative;
-    overflow: hidden;
-    box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(240px, 340px) 1fr; /* sinistra compatta, destra fluida */
+  gap: clamp(16px, 3vw, 32px);
+  background: var(--neutral-0);
+  border-radius: var(--radius-12);
+  padding: clamp(16px, 3vw, 28px);
+  box-shadow: var(--shadow-2);
+  position: relative;
+  isolation: isolate;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  overflow-x: hidden; /* anti-overflow */
 }
-
 .player-profile::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 3px;
-    background: linear-gradient(45deg, #ff6b35, #f7931e, #109820, #32cd32);
-    border-radius: 16px;
-    z-index: -1;
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 2px;
+  
+  z-index: -1;
 }
 
-.player-profile::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    right: 3px;
-    bottom: 3px;
-    background: #ffffff;
-    border-radius: 13px;
-    z-index: -1;
-}
-
-/* ================================================
-   PLAYER LEFT SECTION (PHOTO + PALMARES)
-   ================================================ */
-
+/* Colonna sinistra: foto sopra, palmarès sotto (stessa larghezza) */
 .player-left-section {
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    flex: 0 0 auto;
-    z-index: 1;
-    box-sizing: border-box;
+  display: grid;
+  grid-template-rows: auto auto;
+  align-content: start;
+  gap: var(--gap-m);
+  min-width: 0; /* permette shrink */
 }
-
-/* ================================================
-   PLAYER PHOTO
-   ================================================ */
-
-.player-photo {
-    flex: 0 0 160px;
-    z-index: 1;
+.player-photo { 
+  display: flex; 
+  justify-content: center; 
 }
-
 .round-photo {
-    width: 160px;
-    height: 160px;
-    border-radius: 20%;
-    position: relative;
-    margin: 0 auto;
-    background: #612f1b;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    background-size: cover;
-    background-position: center;
-    border: 2px solid #ff6b35;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+  width: clamp(160px, 18vw, 180px);
+  height: clamp(160px, 18vw, 180px);
+  border-radius: var(--radius-12);
+  background: #612f1b center/cover no-repeat;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  box-shadow: var(--shadow-1);
+  margin: 0 auto;
+  
 }
+.player-initials { font-size: clamp(20px, 2.5vw, 34px); font-weight: 800; color: #fff; }
 
-.player-initials {
-    font-size: 32px;
-    font-weight: bold;
-    color: white;
-    text-align: center;
-}
-
-/* ================================================
-   PALMARES SECTION
-   ================================================ */
-
+/* Palmares (stessa larghezza della foto su PC) */
 .palmares-section {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 12px;
-    padding: 15px 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    width: 160px;
-    height: 160px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-sizing: border-box;
-    margin-left: auto;
+  background: linear-gradient(135deg, var(--neutral-200) 0%, var(--neutral-100) 100%);
+  border-radius: var(--radius-12);
+  padding: var(--pad-s);
+  box-shadow: var(--shadow-1);
+  width: clamp(160px, 18vw, 180px); /* match foto */
+  min-height: 140px;
+  max-width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden; /* anti-strabordo interno */
 }
-
 .palmares-section h3 {
-    font-size: 0.9rem;
-    color: #4d362d;
-    margin: 0 0 10px 0;
-    text-align: center;
-    font-weight: 700;
-    border-bottom: 2px solid #f7931e;
-    padding-bottom: 5px;
+  font-size: var(--fs-300);
+  text-align: center;
+  font-weight: 800;
+  color: var(--heading);
+  border-bottom: 2px solid var(--brand-2);
+  margin: 0 0 var(--gap-s) 0;
+  padding-bottom: 4px;
 }
 
-/* Medals Container */
+/* Medaglie: 3 colonne compatte */
 .medals-container {
-    display: flex;
-    justify-content: space-around;
-    gap: 8px;
-    margin-bottom: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  justify-items: center;
+  width: 100%;
+  margin-bottom: var(--gap-s);
 }
-
 .medal {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 6px 4px;
-    border-radius: 6px;
-    background: #ffffff;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease;
-    min-width: 40px;
-    height: 65px;
+  width: 100%;
+  min-width: 0;
+  height: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 4px;
+  border-radius: calc(var(--radius-12) - 6px);
+  background: var(--neutral-0);
+  box-shadow: var(--shadow-1);
+  transition: transform .15s ease;
+  overflow: hidden;
 }
+.medal:hover { transform: translateY(-1px); }
+.medal-icon { font-size: clamp(1.1rem, 1rem + 0.5vw, 1.35rem); margin-bottom: 2px; }
+.medal-count { font-size: clamp(0.95rem, 0.9rem + 0.3vw, 1.05rem); font-weight: 800; color: var(--heading); line-height: 1; }
+.medal-label { font-size: 0.62rem; font-weight: 700; letter-spacing: .3px; color: #666; line-height: 1; text-transform: uppercase; }
+.gold-medal   { border-top: 2px solid #ffd700; }
+.silver-medal { border-top: 2px solid #c0c0c0; }
+.bronze-medal { border-top: 2px solid #cd7f32; }
 
-.medal:hover {
-    transform: translateY(-1px);
-}
-
-.medal-icon {
-    font-size: 1.4rem;
-    margin-bottom: 2px;
-}
-
-.medal-count {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #4d362d;
-    margin-bottom: 1px;
-    line-height: 1;
-}
-
-.medal-label {
-    font-size: 0.6rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-    color: #666;
-    line-height: 1;
-}
-
-.gold-medal {
-    border-top: 2px solid #ffd700;
-}
-
-.silver-medal {
-    border-top: 2px solid #c0c0c0;
-}
-
-.bronze-medal {
-    border-top: 2px solid #cd7f32;
-}
-
-/* Achievements Section */
-.achievements-section {
-    flex: 1;
-}
-
+/* Achievements */
+.achievements-section { flex: 1; }
 .achievements-section h4 {
-    font-size: 0.8rem;
-    color: #4d362d;
-    margin: 0 0 6px 0;
-    text-align: center;
-    font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--heading);
+  margin: 0 0 6px 0;
+  text-align: center;
+  font-weight: 700;
 }
-
 .achievements-container {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    max-height: 60px;
-    overflow-y: auto;
-    padding-right: 2px;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  min-height: 0px;
+  max-height: 70px;
+  overflow-y: auto;
+  overflow-x: scroll;
+  scrollbar-width: thin;
+  padding-right: 2px;
 }
 
-.achievement-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 6px;
-    background: #ffffff;
-    border-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    font-size: 0.7rem;
-    transition: background-color 0.2s ease;
+.achievement-icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  transition: box-shadow .15s ease, transform .05s ease;
+}
+.achievement-icon { font-size: 0.9rem; }
+
+.achievement-popover[popover] {
+  /* reset UA defaults */
+  margin: 0;
+  border: none;
+  padding: 0;
+  background: transparent;
 }
 
-.achievement-item:hover {
-    background: #f8f9fa;
+/* Pannellino visibile e posizionato rispetto all'icona */
+.achievement-popover:popover-open {
+  position: relative; /* usa l’ancora implicita dell’invoker */
+  inset: auto;
+  /* posiziona sotto e centrato rispetto al bottone invoker */
+  translate: 0 8px;
+  /* Anchor positioning: centrato orizzontalmente rispetto all’icona */
+  right: 10%; /* 280px / 2 */
+  top: calc(anchor(bottom) + 8px);
+  max-width: 230px;
+  z-index: 20;
 }
 
-.achievement-icon {
-    font-size: 0.9rem;
-    flex-shrink: 0;
+/* Card interna */
+.achievement-popover:popover-open::backdrop { backdrop-filter: none; }
+.achievement-popover:popover-open {
+  /* contenuto card */
+}
+.achievement-popover:popover-open::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-left: 1px solid rgba(0,0,0,.08);
+  border-top: 1px solid rgba(0,0,0,.08);
+  transform: rotate(45deg);
+  z-index: -1;
+}
+.achievement-popover:popover-open {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+  padding: 10px 12px;
+  color: #111827;
 }
 
-.achievement-text {
-    flex: 1;
-    color: #4d362d;
-    font-weight: 500;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+/* Testi */
+.ach-popover-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ach-popover-desc {
+  font-size: 0.92rem;
+  color: #374151;
+  margin-bottom: 6px;
+}
+.ach-popover-date {
+  font-size: 0.85rem;
+  color: #6b7280;
 }
 
-/* ================================================
-   PLAYER SKILLS SECTION
-   ================================================ */
-
+/* Colonna destra: stats centrata su PC */
 .player-skills {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    z-index: 1;
-    width: 100%;
-    max-width: 500px;
-    box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-m);
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto; /* centra il blocco stats */
+  min-width: 0;
 }
-
 .skill-item {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    width: 100%;
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  align-items: center;
+  gap: var(--gap-m);
 }
-
 .skill-item label {
-    font-weight: 600;
-    color: #4d362d;
-    width: 85px;
-    font-size: 1rem;
-    flex-shrink: 0;
-    text-align: left;
+  font-weight: 700;
+  color: var(--heading);
+  font-size: var(--fs-400);
+  text-align: left;
 }
-
 .skill-bar {
-    flex: 1;
-    height: 24px;
-    background: #f0f0f0;
-    border-radius: 12px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 350px;
+  height: 22px;
+  background: var(--neutral-100);
+  border-radius: 999px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+  max-width: 460px;
+  width: 100%;
 }
-
 .skill-fill {
-    height: 100%;
-    border-radius: 12px;
-    width: 0%;
-    transition: width 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: 10px;
+  height: 100%;
+  border-radius: 999px;
+  width: 0%;
+  transition: width .8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  color: #fff;
+  font-weight: 800;
 }
-
-.skill-value {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: white;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-    pointer-events: none;
-    z-index: 10;
-    position: static;
-}
-
-/* Skill Colors */
-.skill-dritto { background: linear-gradient(90deg, #ff6b35, #ff8c42); }
+.skill-value { font-size: 0.85rem; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+.skill-dritto   { background: linear-gradient(90deg, #ff6b35, #ff8c42); }
 .skill-rovescio { background: linear-gradient(90deg, #2ecc40, #27ae60); }
 .skill-servizio { background: linear-gradient(90deg, #3498db, #2980b9); }
-.skill-volee { background: linear-gradient(90deg, #9b59b6, #8e44ad); }
-.skill-stamina { background: linear-gradient(90deg, #e74c3c, #c0392b); }
+.skill-volee    { background: linear-gradient(90deg, #9b59b6, #8e44ad); }
+.skill-stamina  { background: linear-gradient(90deg, #e74c3c, #c0392b); }
 .skill-gameplay { background: linear-gradient(90deg, #f39c12, #e67e22); }
 
-/* Overall Score */
+.line-separator {
+  height: 2px;
+  border-radius: 12px;
+  background: var(--neutral-200);
+  margin-top: var(--gap-m);
+  margin-bottom: var(--gap-s);
+}
+/* Overall: bordino rimosso */
 .overall-score {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 2px solid #f0f0f0;
-    display: flex;
-    align-items: center;
-    gap: 15px;
+  margin: 0;
+  padding-top: 0;
+  border-top: none;
+  display: flex;
+  align-items: center;
+  gap: var(--gap-m);
 }
-
 .overall-score label {
-    font-weight: 700;
-    color: #4d362d;
-    font-size: 1.1rem;
-    width: 85px;
+  font-weight: 800;
+  color: var(--heading);
+  font-size: var(--fs-400);
+  width: 130px;
 }
-
 .overall-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #ff6b35, #f7931e);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  font-size: clamp(1.3rem, 0.8rem + 1.8vw, 1.9rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-/* ================================================
-   STATS CARDS SECTION
-   ================================================ */
-
+/* Stats cards: sempre 3 in riga (fallback scroll <340px) */
 .stats-cards-section {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
-    justify-content: center;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap-l);
+  margin: var(--gap-xl) auto var(--gap-l);
+  max-width: var(--container);
 }
-
 .stats-card {
-    background: linear-gradient(135deg, #d4704c 0%, #f7931e 100%);
-    color: #fff;
-    padding: 18px 20px;
-    border-radius: 16px;
-    box-shadow: 0 6px 16px rgba(255, 107, 53, 0.3);
-    text-align: center;
-    flex: 1;
-    max-width: 200px;
-    transition: transform 0.2s ease;
+  background: linear-gradient(135deg, #d4704c 0%, var(--brand-2) 100%);
+  color: #fff;
+  padding: var(--pad-l);
+  border-radius: var(--radius-12);
+  box-shadow: 0 6px 16px rgba(255, 107, 53, 0.25);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.stats-card:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(255,107,53,0.35); }
+.stats-card .stats-label { font-size: 0.9rem; opacity: 0.9; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.stats-card .stats-value { font-size: clamp(1.3rem, 1.1rem + 1.2vw, 1.9rem); font-weight: 800; }
+
+@media (max-width: 340px) {
+  .stats-cards-section {
+    grid-auto-flow: column;
+    grid-template-columns: repeat(3, minmax(140px, 1fr));
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+  }
+  .stats-cards-section::-webkit-scrollbar { height: 6px; }
+  .stats-cards-section::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 999px; }
 }
 
-.stats-card:hover { 
-    transform: translateY(-2px); 
-    box-shadow: 0 8px 20px rgba(255,107,53,0.4); 
-}
-
-.stats-card .stats-label { 
-    font-size: 0.9rem; 
-    opacity: 0.9; 
-    margin-bottom: 6px; 
-    text-transform: uppercase; 
-    letter-spacing: 0.5px; 
-}
-
-.stats-card .stats-value { 
-    font-size: 1.6rem; 
-    font-weight: 700; 
-    line-height: 1; 
-}
-
-/* ================================================
-   CHART SECTION
-   ================================================ */
-
-#eloChart {
-    width: 100% !important;
-    height: 100% !important;
-    display: block !important;
-    position: relative !important;
-}
-
+/* Chart */
 .chart-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 800px;
-    height: 300px;
-    margin: 0 auto 25px auto;
-    overflow: hidden;
-    background: #ffffff;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  position: relative;
+  width: 100%;
+  max-width: var(--container);
+  height: clamp(260px, 28vw, 380px);
+  margin: 0 auto var(--gap-xl) auto;
+  overflow: hidden;
+  background: var(--neutral-0);
+  border-radius: var(--radius-12);
+  padding: var(--pad-xl);
+  box-shadow: var(--shadow-2);
 }
+#eloChart { width: 100% !important; height: 100% !important; display: block !important; }
 
-/* ================================================
-   MATCHES SECTION
-   ================================================ */
-
-.matches-section {
-    margin-top: 30px;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.match-list {
-    max-height: 300px;
-    overflow-y: auto;
-    margin-bottom: 25px;
-}
-
+/* Matches */
+.matches-section { margin-top: var(--gap-xl); max-width: var(--container); margin-inline: auto; }
+.match-list { max-height: 420px; overflow: auto; margin-bottom: var(--gap-l); padding-right: 2px; }
 .match-box {
-    background: #ffffff;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    margin-bottom: 12px;
-    padding: 16px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: box-shadow 0.2s ease;
+  background: var(--neutral-0);
+  border: var(--border);
+  border-radius: var(--radius-12);
+  margin-bottom: var(--gap-m);
+  padding: var(--pad-l);
+  box-shadow: var(--shadow-1);
+  transition: box-shadow 0.2s ease;
 }
-
-.match-box:hover { 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15); 
-}
-
-.match-box.match-win { 
-    border: 1.7px solid #2ecc40; 
-}
-
-.match-box.match-lose { 
-    border: 1.7px solid #e36f10; 
-}
-
-/* Match Content */
-.match-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 16px;
-}
-
-.players-section {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    min-width: 0;
-}
-
-.player-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 8px 0;
-}
-
+.match-box:hover { box-shadow: 0 4px 10px rgba(0,0,0,0.12); }
+.match-box.match-win { border: 1.7px solid var(--good); }
+.match-box.match-lose { border: 1.7px solid var(--warn); }
+.match-content { display: grid; grid-template-columns: 1fr auto; gap: var(--gap-m); align-items: start; }
+.players-section { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.player-row { display: grid; grid-template-columns: 32px 1fr; align-items: center; gap: 10px; padding: 4px 0; }
 .player-initial {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #ff6b35;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 0.9rem;
-    flex: 0 0 32px;
-    text-transform: uppercase;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--brand-1); color: #fff; display: grid; place-items: center;
+  font-weight: 800; font-size: 0.9rem; text-transform: uppercase;
 }
-
-.player-name {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #dc872d;
-    flex: 1 1 auto;
-    line-height: 1.3;
-    min-width: 0;
-}
-
-.player-name.winner { 
-    color: #41b641; 
-    font-weight: 700; 
-}
-
-.scores-section {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 12px;
-    flex: 0 0 auto;
-    flex-wrap: nowrap;
-}
-
-.set-scores {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    min-width: 40px;
-    flex: 0 0 auto;
-}
-
+.player-name { font-size: var(--fs-400); font-weight: 700; color: #dc872d; line-height: 1.3; min-width: 0; }
+.player-name.winner { color: var(--good); font-weight: 800; }
+.scores-section { display: flex; flex-direction: row; gap: var(--gap-s); flex: 0 0 auto; flex-wrap: nowrap; }
+.set-scores { display: flex; flex-direction: column; gap: 6px; min-width: 40px; }
 .score-set {
-    display: block;
-    background-color: #f8f8f8;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    padding: 6px 8px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: #333;
-    text-align: center;
-    line-height: 1;
-    white-space: nowrap;
-    flex-shrink: 0;
+  background-color: var(--neutral-50);
+  border: var(--border);
+  border-radius: calc(var(--radius-12) - 8px);
+  padding: 6px 8px;
+  font-weight: 800;
+  font-size: 0.92rem;
+  color: #333;
+  text-align: center;
+  line-height: 1;
+  white-space: nowrap;
+}
+.score-set.winner-set { background-color: var(--good); color: #fff; border-color: #2a8f2a; }
+.match-info { display: flex; flex-wrap: wrap; gap: var(--gap-s); align-items: center; margin-top: var(--gap-s); padding-top: var(--gap-s); border-top: 1px solid var(--neutral-100); font-size: 0.95rem; color: #666; }
+.match-date { font-weight: 600; }
+.match-surface { background: var(--neutral-100); padding: 2px 10px; border-radius: 999px; font-size: 0.85rem; margin-left: auto; }
+
+/* Responsive: mobile (foto sx, palmarès dx con stessa altezza; stats sotto) */
+@media (max-width: 900px) {
+  .player-profile {
+    grid-template-columns: 1fr;
+    row-gap: var(--gap-l);
+  }
+  .player-left-section {
+    grid-template-rows: none;
+    grid-template-columns: 1fr 1fr;   /* affiancati */
+    align-items: stretch;             /* stessa altezza di riga */
+    justify-items: stretch;
+  }
+  /* Blocchi con la stessa altezza grazie alla griglia e all'aspect-ratio */
+  .player-photo { align-self: stretch; }
+  .round-photo {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;             /* quadrata */
+    margin: 0;
+  }
+  .palmares-section {
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;             /* stessa altezza della foto */
+    min-height: 0;
+    margin: 0;
+    align-self: stretch;
+    justify-self: stretch;
+  }
+  .player-skills {
+    max-width: 100%;
+    margin: 0;                       /* stats sotto a tutta larghezza */
+  }
+  .skill-item { grid-template-columns: 110px 1fr; }
+  .chart-wrapper { height: clamp(240px, 40vw, 320px); padding: var(--pad-l); }
+  .match-list { max-height: 380px; }
 }
 
-.score-set.winner-set {
-    background-color: #41b641;
-    color: #fff;
-    border-color: #2a8f2a;
+@media (max-width: 680px) {
+  .medal { height: 58px; }
+  .achievements-container { max-height: 56px; }
+  .skill-item { grid-template-columns: 95px 1fr; gap: var(--gap-s); }
+  .skill-bar { height: 20px; max-width: none; }
 }
 
-.match-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid #f0f0f0;
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.match-date { 
-    font-weight: 500; 
-}
-
-.match-surface {
-    background: #f0f0f0;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    margin-left: auto;
-}
-
-/* ================================================
-   RESPONSIVE DESIGN
-   ================================================ */
-
-/* Tablet */
-@media (max-width: 768px) {
-    body { 
-        padding: 1rem; 
-    }
-    
-    .player-profile {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 20px;
-        padding: 20px 15px;
-        max-width: 95%;
-        box-sizing: border-box;
-    }
-    
-    /* Layout foto + palmares affiancati */
-    .player-left-section {
-        flex-direction: row;
-        gap: 15px;
-        width: 100%;
-        justify-content: flex-start;
-        align-items: flex-start;
-        padding-right: 15px;
-        box-sizing: border-box;
-    }
-    
-    .player-photo {
-        flex: 0 0 120px;
-    }
-    
-    .round-photo {
-        width: 120px;
-        height: 120px;
-        border-width: 2px;
-    }
-    
-    .player-initials {
-        font-size: 20px;
-    }
-    
-    /* Palmares responsivo */
-    .palmares-section {
-        flex: 1;
-        width: auto;
-        max-width: calc(100% - 120px - 15px - 15px);
-        min-width: 100px;
-        height: 120px;
-        padding: 8px 6px;
-        margin-right: 0;
-    }
-    
-    .palmares-section h3 {
-        font-size: 0.8rem;
-        margin-bottom: 8px;
-        padding-bottom: 4px;
-    }
-    
-    .medals-container {
-        gap: 4px;
-        margin-bottom: 6px;
-    }
-    
-    .medal {
-        min-width: 30px;
-        height: 50px;
-        padding: 4px 2px;
-    }
-    
-    .medal-icon {
-        font-size: 1.1rem;
-    }
-    
-    .medal-count {
-        font-size: 0.9rem;
-    }
-    
-    .medal-label {
-        font-size: 0.55rem;
-    }
-    
-    .achievements-section h4 {
-        font-size: 0.7rem;
-        margin-bottom: 4px;
-        flex-direction: row;
-    }
-    
-    .achievements-container {
-        max-height: 45px;
-        gap: 2px;
-    }
-    
-    .achievement-item {
-        padding: 2px 4px;
-        font-size: 0.6rem;
-    }
-    
-    .achievement-icon {
-        font-size: 0.8rem;
-    }
-    
-    /* Skills section */
-    .player-skills {
-        width: 100%;
-        max-width: 100%;
-        margin-top: 15px;
-    }
-    
-    .skill-item {
-        gap: 12px;
-    }
-    
-    .skill-item label {
-        width: 75px;
-        font-size: 0.9rem;
-        margin-right: 15px;
-    }
-    
-    .skill-bar {
-        max-width: 280px;
-    }
-    
-    .skill-value {
-        right: 8px;
-        font-size: 0.8rem;
-    }
-    
-    /* Stats cards */
-    .stats-cards-section {
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    
-    .stats-card {
-        flex: 1;
-        min-width: 70px;
-        padding: 10px 10px;
-        gap: 6px;
-    }
-    
-    .stats-card .stats-value {
-        font-size: 1.4rem;
-    }
-    
-    /* Chart */
-    .chart-wrapper {
-        height: 250px;
-        padding: 15px;
-        max-width: 93%;
-    }
-    
-    /* Match content */
-    .match-content { 
-        gap: 12px; 
-    }
-    
-    .players-section { 
-        flex: 1 1 auto; 
-        min-width: 0; 
-    }
-    
-    .scores-section {
-        gap: 10px;
-        margin-left: 6px;
-        flex: 0 0 auto;
-    }
-    
-    .set-scores { 
-        min-width: 32px; 
-    }
-    
-    .player-row { 
-        gap: 8px; 
-        padding: 4px 0; 
-    }
-    
-    .player-initial { 
-        width: 28px; 
-        height: 28px; 
-        font-size: 0.8rem; 
-        flex: 0 0 28px; 
-    }
-    
-    .player-name { 
-        font-size: 0.95rem; 
-        min-width: 0; 
-        overflow: hidden; 
-        text-overflow: ellipsis; 
-        white-space: nowrap; 
-    }
-}
-
-/* Mobile */
-@media (max-width: 480px) {
-    .player-left-section {
-        gap: 12px;
-        padding-right: 12px;
-    }
-    
-    .player-photo {
-        flex: 0 0 100px;
-    }
-    
-    .round-photo {
-        width: 100px;
-        height: 100px;
-        border-width: 2px;
-    }
-    
-    .player-initials {
-        font-size: 18px;
-    }
-    
-    .palmares-section {
-        max-width: calc(100% - 100px - 12px - 12px);
-        min-width: 80px;
-        height: 100px;
-        padding: 6px 4px;
-    }
-    
-    .palmares-section h3 {
-        font-size: 0.7rem;
-        margin-bottom: 6px;
-    }
-    
-    .medals-container {
-        gap: 2px;
-        margin-bottom: 4px;
-    }
-    
-    .medal {
-        min-width: 25px;
-        height: 42px;
-        padding: 3px 1px;
-    }
-    
-    .medal-icon {
-        font-size: 0.9rem;
-    }
-    
-    .medal-count {
-        font-size: 0.8rem;
-    }
-    
-    .medal-label {
-        font-size: 0.5rem;
-    }
-    
-    .achievements-section h4 {
-        font-size: 0.65rem;
-        margin-bottom: 3px;
-    }
-    
-    .achievements-container {
-        max-height: 35px;
-        max-width: 180px;
-        text-align: center;
-        gap: 2px;
-        flex-direction: row;
-    }
-    
-    .achievement-item {
-        padding: 2px 5px;
-        width: 70px;
-        font-size: 0.6rem;
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    }
-    
-    .achievement-icon {
-        font-size: 0.8rem;
-    }
-    
-    .player-skills {
-        max-width: 100%;
-    }
-    
-    .skill-bar {
-        height: 20px;
-        max-width: 220px;
-    }
-    
-    .skill-value {
-        font-size: 0.75rem;
-        right: 6px;
-    }
-    
-    .skill-item label {
-        width: 65px;
-        font-size: 0.85rem;
-    }
-    
-    .stats-cards-section {
-        flex-direction: row;
-        gap: 8px;
-    }
-    
-    .stats-card {
-        font-size: 8pt;
-        padding: 8px;
-        width: 50px;
-    }
-    
-    .chart-wrapper {
-        height: 220px;
-        padding: 12px;
-    }
-    
-    .match-box { 
-        padding: 12px; 
-    }
-    
-    .match-content { 
-        align-items: stretch; 
-    }
-    
-    .scores-section { 
-        gap: 8px; 
-    }
-    
-    .set-scores { 
-        min-width: 28px; 
-    }
-    
-    .score-set { 
-        padding: 4px 6px; 
-        font-size: 0.8rem; 
-    }
-    
-    .match-info { 
-        flex-direction: column; 
-        gap: 4px; 
-        text-align: center; 
-    }
-}
-
-/* Extra small mobile */
-@media (max-width: 394px) {
-    .player-left-section {
-        gap: 10px;
-        padding-right: 10px;
-    }
-    
-    .palmares-section {
-        max-width: calc(100% - 100px - 10px - 10px);
-        min-width: 70px;
-    }
+@media (max-width: 420px) {
+  body { padding: 0.75rem; }
+  .player-initial { width: 28px; height: 28px; font-size: 0.8rem; }
+  .player-name { font-size: 1rem; }
+  .stats-card { padding: var(--pad-s); }
+  .match-list { max-height: 320px; }
+  .stats-cards-section { gap: 8px; }
+  .stats-card { padding: 10px; }
+  .stats-card .stats-label { font-size: 0.78rem; }
+  .stats-card .stats-value { font-size: 1.1rem; }
 }

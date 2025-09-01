@@ -329,33 +329,58 @@ function updatePlayerPalmares(stats) {
     animateCounters({ gold: stats.gold || 0, silver: stats.silver || 0, bronze: stats.bronze || 0 });
 }
 
+// Sostituisci l'intera funzione updatePlayerAchievements con questa
 function updatePlayerAchievements(achievements) {
     const container = document.getElementById('achievements-container');
-    
     if (!container) return;
-    
+
     container.innerHTML = '';
-    
+
     if (!achievements || achievements.length === 0) {
-        container.innerHTML = '';
+        container.innerHTML = '<div class="achievement-item"><span class="achievement-text"></span></div>';
         return;
     }
-    
-    achievements.forEach(achievement => {
-        const achievementDef = ACHIEVEMENTS[achievement.id];
-        if (!achievementDef) return;
-        
-        const achievementEl = document.createElement('div');
-        achievementEl.className = 'achievement-item';
-        achievementEl.innerHTML = `
-            <span class="achievement-icon">${achievementDef.icon}</span>
-            <div class="achievement-details">
-                <div class="achievement-text">${achievementDef.name}</div>
-            </div>
+
+    achievements.forEach((achievement, idx) => {
+        const def = ACHIEVEMENTS[achievement.id];
+        if (!def) return;
+
+        const popId = `ach-pop-${achievement.id}-${idx}`;
+
+        // Wrapper per ancorare il popover all'icona
+        const wrapper = document.createElement('div');
+        wrapper.className = 'achievement-wrapper';
+
+        // Bottone icona = invoker del popover
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'achievement-icon-btn';
+        btn.setAttribute('aria-label', `${def.name} — ${def.description}`);
+        btn.setAttribute('popovertarget', popId); // toggle di default
+        btn.textContent = def.icon;
+
+        // Popover con contenuto
+        const pop = document.createElement('div');
+        pop.id = popId;
+        pop.className = 'achievement-popover';
+        pop.setAttribute('popover', 'auto'); // abilita light-dismiss/ESC
+
+        const obtainedDate = achievement.date
+            ? new Date(achievement.date).toLocaleDateString('it-IT')
+            : '';
+
+        pop.innerHTML = `
+            <div class="ach-popover-title">${def.icon} ${def.name}</div>
+            <div class="ach-popover-desc">${def.description}</div>
+            <div class="ach-popover-date">Ottenuto: ${obtainedDate}</div>
         `;
-        container.appendChild(achievementEl);
+
+        wrapper.appendChild(btn);
+        wrapper.appendChild(pop);
+        container.appendChild(wrapper);
     });
 }
+
 
 function animateCounters(palmares) {
     const counters = [
