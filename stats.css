@@ -733,6 +733,7 @@ h3 {
     .achievements-section h4 {
         font-size: 0.7rem;
         margin-bottom: 4px;
+        flex-direction: row;
     }
     
     .achievements-container {
