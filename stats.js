@@ -337,7 +337,7 @@ function updatePlayerAchievements(achievements) {
     container.innerHTML = '';
     
     if (!achievements || achievements.length === 0) {
-        container.innerHTML = '<div class="achievement-item"><span class="achievement-text">Nessun achievement</span></div>';
+        container.innerHTML = '<div class="achievement-item"><span class="achievement-text"></span></div>';
         return;
     }
     
