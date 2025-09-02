@@ -41,10 +41,24 @@ function populateSelects(names) {
   ['player1','player2','player3','player4'].forEach(id => {
     const sel = document.getElementById(id);
     if (!sel) return;
+
+    // reset
     sel.innerHTML = '';
+
+    // placeholder non selezionabile
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Seleziona Giocatore';
+    placeholder.disabled = true;  // impedisce la selezione
+    placeholder.selected = true;  // mostrato come default
+    // placeholder.hidden = true; // opzionale: nasconde la voce dal menu a tendina
+    sel.appendChild(placeholder);
+
+    // opzioni reali
     names.forEach(name => {
       const opt = document.createElement('option');
-      opt.value = opt.textContent = name;
+      opt.value = name;
+      opt.textContent = name;
       sel.appendChild(opt);
     });
   });
@@ -77,14 +91,14 @@ function switchTab(tab) {
     if (!document.getElementById('player3')) {
       const sel3 = document.createElement('select');
       sel3.id = 'player3';
-      sel3.innerHTML = '<option value="" disabled selected>Seleziona un giocatore</option>';
+      sel3.innerHTML = '<option value="" selected disabled hidden>Seleziona un giocatore</option>';
       team1.appendChild(sel3);
     }
     // Inject player4 in team2
     if (!document.getElementById('player4')) {
       const sel4 = document.createElement('select');
       sel4.id = 'player4';
-      sel4.innerHTML = '<option value="" disabled selected>Seleziona un giocatore</option>';
+      sel4.innerHTML = '<option value="" selected disabled hidden>Seleziona un giocatore</option>';
       team2.appendChild(sel4);
     }
   } else {
