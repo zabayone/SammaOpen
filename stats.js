@@ -261,7 +261,7 @@ function updatePlayerPhoto(playerName) {
         }
     };
     
-    img.src = `photos/${imageName}.jpg`;
+    img.src = `photos/${imageName}.webp`;
 }
 
 function animateSkillBars(skills, overall) {
@@ -424,23 +424,21 @@ async function createPlayerProfile(playerName, matches, namesById) {
 function drawEloChart(labels, singlesValues, doublesValues = []) {
     const canvas = document.getElementById('eloChart');
     if (!canvas) return;
-    
-    canvas.style.width = '100%';
-    canvas.style.height = '280px';
-    
+
     const ctx = canvas.getContext('2d');
-    
+
     if (eloChartInstance) {
         eloChartInstance.destroy();
         eloChartInstance = null;
     }
-    
+
     const datasets = [];
-    
+
+    // Dataset per il singolo
     if (Array.isArray(singlesValues) && singlesValues.length) {
         datasets.push({
             label: 'ELO Singolo',
-             singlesValues, // CORRETTO: aggiunto ''
+            data: singlesValues,  // ✅ CORRETTO: Aggiunta la chiave 'data'
             borderColor: '#ff6b35',
             backgroundColor: 'rgba(255,107,53,0.15)',
             borderWidth: 3,
@@ -450,11 +448,12 @@ function drawEloChart(labels, singlesValues, doublesValues = []) {
             fill: false
         });
     }
-    
+
+    // Dataset per il doppio
     if (Array.isArray(doublesValues) && doublesValues.length) {
         datasets.push({
             label: 'ELO Doppio',
-             doublesValues, // CORRETTO: aggiunto ''
+            data: doublesValues,  // ✅ CORRETTO: Aggiunta la chiave 'data'
             borderColor: '#2b7a78',
             backgroundColor: 'rgba(43,122,120,0.15)',
             borderWidth: 3,
@@ -464,9 +463,9 @@ function drawEloChart(labels, singlesValues, doublesValues = []) {
             fill: false
         });
     }
-    
+
     if (!labels?.length || datasets.length === 0) return;
-    
+
     eloChartInstance = new Chart(ctx, {
         type: 'line',
         data:{
@@ -476,7 +475,7 @@ function drawEloChart(labels, singlesValues, doublesValues = []) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            interaction: {
+            interaction: {      // ✅ CORRETTO: Sistemato il typo 'sinteraction'
                 intersect: false,
                 mode: 'index'
             },
@@ -494,23 +493,21 @@ function drawEloChart(labels, singlesValues, doublesValues = []) {
             },
             scales: {
                 y: {
-                    min: Math.min(...singlesValues, ...doublesValues) - 50,
-                    max: Math.max(...singlesValues, ...doublesValues) + 50,
+                    min: Math.min(...singlesValues.concat(doublesValues)) - 50,
+                    max: Math.max(...singlesValues.concat(doublesValues)) + 50,
                     beginAtZero: false,
-                    grid: {
-                        display: true,
-                        color: 'rgba(0,0,0,0.1)'
-                    }
+                    grid: { display: true, color: 'rgba(0,0,0,0.1)' }
                 },
                 x: {
-                    grid: {
-                        display: false
-                    }
+                    grid: { display: false }
                 }
             }
         }
     });
 }
+
+
+
 
 /* Match Rendering Functions */
 function parseSets(arr) {
