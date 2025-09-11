@@ -460,7 +460,8 @@ function drawEloChart(labels, singlesValues, doublesValues = []) {
             tension: 0.25,
             pointRadius: 4,
             pointHoverRadius: 6,
-            fill: false
+            fill: false,
+            hidden:true
         });
     }
 
