@@ -11,7 +11,7 @@
 </head>
 <body>
   <div class="header">
-    <img class="logo" src="logo.png" alt="logo"/>
+    <img class="logo" src="logo.png" alt="logo" id="logo"/>
     <h1>Lüdesan Garros</h1>
   </div>
 
@@ -26,9 +26,60 @@
 
     <div id="tableWrapper"><div id="leaderboard"></div></div>
 
+    <div class="container-wide" style="text-align:right;margin-bottom:10px;">
+</div>
+
+<!-- Modal Passkey -->
+<div class="modal-overlay" id="passkeyModal">
+  <div class="modal">
+    <h2>Autorizzazione</h2>
+    <p>Inserire la passkey per procedere.</p>
+    <input type="password" id="passkeyInput" placeholder="Passkey" required />
+    <div class="button-group">
+      <button id="confirmPasskey">Conferma</button>
+      <button type="button" class="cancel-btn" id="cancelPasskey">Annulla</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addPlayerModal">
+  <div class="modal">
+    <h2>Nuovo giocatore</h2>
+    <form id="addPlayerForm">
+      <input type="text" id="ap_name" placeholder="Nome e cognome" required />
+      <input type="text" id="ap_short" placeholder="Abbreviazione (es. M. Rossi)" />
+      <input type="url" id="ap_photo" placeholder="URL foto (opzionale)" />
+
+      <div class="line-separator"></div>
+      <div class="grid-2">
+        <input type="number" id="ap_dritto" min="1" max="10" value="5" placeholder="Dritto (1-10)" required />
+        <input type="number" id="ap_rovescio" min="1" max="10" value="5" placeholder="Rovescio (1-10)" required />
+        <input type="number" id="ap_servizio" min="1" max="10" value="5" placeholder="Servizio (1-10)" required />
+        <input type="number" id="ap_volee" min="1" max="10" value="5" placeholder="Volée (1-10)" required />
+        <input type="number" id="ap_stamina" min="1" max="10" value="5" placeholder="Stamina (1-10)" required />
+        <input type="number" id="ap_gameplay" min="1" max="10" value="5" placeholder="Gameplay (1-10)" required />
+      </div>
+
+      <label style="display:block;margin-top:8px;">
+        <input type="checkbox" id="ap_singles" checked /> Inizializza Singles
+      </label>
+      <label style="display:block;">
+        <input type="checkbox" id="ap_doubles" /> Inizializza Doubles
+      </label>
+
+      <div class="button-group">
+        <button type="submit">Salva</button>
+        <button type="button" class="cancel-btn" id="closeAddPlayer">Annulla</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
     <div class="add-result"><h3>Aggiungi Risultato</h3></div>
 
     <div class="match-form">
+      <button id="openAddPlayer" class="btn-outline">+</button>
       <div class="team" id="team1">
         <select id="player1"><option value="" selected disabled hidden>Seleziona un giocatore</option></select>
       </div>

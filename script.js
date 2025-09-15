@@ -1,4 +1,16 @@
-import { loadLeaderboardData, saveMatchResult, checkPasskey } from './server.js';
+import { loadLeaderboardData, saveMatchResult, checkPasskey, createPlayer, ensureRanking, upsertPlayerStats } from './server.js';
+
+
+// Cliccando sul logo si torna alla home
+document.addEventListener('DOMContentLoaded', () => {
+  const logo = document.getElementById('logo');
+  if (logo) {
+    logo.style.cursor = 'pointer';
+    logo.addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+  }
+});
 
 // 1) Fix abbreviaNome (ritornava un array e usava 'parts' intero)
 export function abbreviaNome(input) {
@@ -129,6 +141,7 @@ function renderLeaderboard() {
   if (!leaderboard) { console.warn('leaderboard non trovata, skip render'); return; }
   const arr = Object.entries(data[currentTab])
     .filter(([name]) => name !== "Ospite")
+    .filter(([name, player]) => (player.wins || 0) + (player.losses || 0) > 0) // filtra chi non ha partite
     .map(([name, player]) => {
       const num = (player.wins||0) + (player.losses||0);
       const reliability = Math.min(1, num / 10);
@@ -196,4 +209,119 @@ async function addResult() {
     alert('Errore salvataggio: ' + (err?.message || err));
   }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const openBtn = document.getElementById('openAddPlayer');
+
+  // Modale passkey
+  const passkeyModal = document.getElementById('passkeyModal');
+  const passkeyInput = document.getElementById('passkeyInput');
+  const confirmPass = document.getElementById('confirmPasskey');
+  const cancelPass = document.getElementById('cancelPasskey');
+
+  // Modale aggiungi giocatore
+  const addPlayerModal = document.getElementById('addPlayerModal');
+  const addPlayerForm = document.getElementById('addPlayerForm');
+  const closeAddPlayerBtn = document.getElementById('closeAddPlayer'); // se presente
+
+  const closeModal = (el) => el?.classList.remove('active');
+  const openModal = (el) => el?.classList.add('active');
+
+  // Apertura: chiedi passkey se non già validata in sessione
+  openBtn?.addEventListener('click', () => {
+    if (sessionStorage.getItem('passkey_ok') === '1') {
+      openModal(addPlayerModal);
+    } else {
+      passkeyInput.value = '';
+      openModal(passkeyModal);
+    }
+  });
+
+  // Conferma passkey
+  confirmPass?.addEventListener('click', async () => {
+    const pass = passkeyInput.value.trim();
+    if (!pass) return alert('Inserire la passkey');
+    try {
+      const ok = await checkPasskey(pass);
+      if (ok) {
+        sessionStorage.setItem('passkey_ok', '1');
+        closeModal(passkeyModal);
+        openModal(addPlayerModal);
+      } else {
+        alert('Passkey non valida');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Errore di verifica passkey');
+    }
+  });
+
+  // Chiudi modale passkey
+  cancelPass?.addEventListener('click', () => closeModal(passkeyModal));
+  passkeyModal?.addEventListener('click', (e) => { if (e.target === passkeyModal) closeModal(passkeyModal); });
+
+  // Chiudi modale add-player (se c'è un pulsante dedicato)
+  closeAddPlayerBtn?.addEventListener('click', () => closeModal(addPlayerModal));
+  addPlayerModal?.addEventListener('click', (e) => { if (e.target === addPlayerModal) closeModal(addPlayerModal); });
+
+  // Submit protetto: rifiuta se non validato
+  addPlayerForm?.addEventListener('submit', async (e) => {
+    if (sessionStorage.getItem('passkey_ok') !== '1') {
+      e.preventDefault();
+      alert('Autorizzazione richiesta. Inserire la passkey.');
+      closeModal(addPlayerModal);
+      openModal(passkeyModal);
+      return;
+    }
+
+    e.preventDefault();
+    const name = document.getElementById('ap_name').value.trim();
+    const shortName = (document.getElementById('ap_short').value.trim() || name);
+    const photoUrl = document.getElementById('ap_photo').value.trim() || null;
+    const singles = document.getElementById('ap_singles').checked;
+    const doubles = document.getElementById('ap_doubles').checked;
+
+    const stats = {
+      dritto: +document.getElementById('ap_dritto').value,
+      rovescio: +document.getElementById('ap_rovescio').value,
+      servizio: +document.getElementById('ap_servizio').value,
+      volee: +document.getElementById('ap_volee').value,
+      stamina: +document.getElementById('ap_stamina').value,
+      gameplay: +document.getElementById('ap_gameplay').value,
+      gold: 0, silver: 0, bronze: 0, achievements: []
+    };
+
+    if (!name) return alert('Inserire nome e cognome');
+
+    try {
+      // crea player
+      const pid = await createPlayer({ name, shortName, photoUrl });
+
+      // opzionale: invalidare cache map locale per nuove ricerche nome->id
+      localStorage.removeItem('playersMap');
+
+      // inizializza ranking
+      const types = [
+        ...(singles ? ['singles'] : []),
+        ...(doubles ? ['doubles'] : [])
+      ];
+      if (types.length) await ensureRanking(pid, types);
+
+      // crea/merge stats
+      await upsertPlayerStats(pid, stats);
+
+      // ricarica dati e UI
+      data = await loadLeaderboardData();
+      populateSelects(Object.keys(data.singles));
+      renderLeaderboard();
+
+      // chiudi modale
+      closeModal(addPlayerModal);
+    } catch (err) {
+      console.error(err);
+      alert('Errore nel salvataggio del giocatore');
+    }
+  });
+});
+
 
